@@ -1,0 +1,72 @@
+[tool.poetry]
+name = "Sentry"
+version = "0.1.0"
+authors = ["Vladimir Timofeenko <vladimir.timofeenko@snowflake.com>"]
+description = "Repository of security-related queries for Snowflake"
+readme = "README.md"
+license = "Apache-2.0"
+repository = "https://github.com/Snowflake-Labs/Sentry"
+homepage = "https://github.com/Snowflake-Labs/Sentry"
+
+[tool.poetry.dependencies]
+python = "~3.8"
+streamlit = "1.22.0"
+snowflake-snowpark-python = "1.12.0"
+
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.13.2"
+black = "^24.3.0"
+ruff = "^0.3.0"
+watchdog = "^4.0.0"
+pytest = "^8.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+known_first_party = "poetry"
+
+[tool.black]
+# Debatable, but on modern displays is OK
+# Making explicit in the config file
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+  "A", # flake builtins
+  "D", # docstyle, very angry
+  "N", # pep8-naming
+  "TID", # for banned inputs
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"streamlit.file_uploader".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.cache_data".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.cache_resource".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.camera_input".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.chat_message".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.chat_input".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.download_button".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.bokeh_chart".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.scatter_chart".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.set_page_config".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.components".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.experimental_set_query_params".msg = "This feature is not supported in Streamlit in Snowflake"
+"streamlit.experimental_get_query_params".msg = "This feature is not supported in Streamlit in Snowflake"
+
+[tool.pytest.ini_options]
+# Test directory
+testpaths = [ "tests" ]
+# Source code of the app is at ./src
+pythonpath = [ "src" ]
+markers = [
+    "online: Run tests requiring connection to Snowflake"
+]
+
+[tools.pytest.markers]

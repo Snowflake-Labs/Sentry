@@ -1,0 +1,12 @@
+definition_version: 1
+streamlit:
+  name: Sentry
+  stage: my_streamlit_stage
+  query_warehouse: REPLACEME # NOTE: snowcli streamlit deploy validator needs _some_ query_warehouse specified
+  main_file: Authentication.py
+  env_file: environment.yml
+  pages_dir: pages/
+  additional_source_files:
+    - common/queries.py
+    - common/tiles.py
+    - common/utils.py

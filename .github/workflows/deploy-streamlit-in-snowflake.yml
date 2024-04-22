@@ -1,0 +1,32 @@
+name: "Deploy Streamlit in Snowflake to the specified account"
+on:
+  workflow_dispatch: # Run only manually
+
+jobs:
+  deploy-streamlit-in-snowflake:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Boilerplate
+      - uses: actions/checkout@v3
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      # Actual deployment action
+      - name: "Deploy Streamlit in Snowflake"
+        # Effectively runs a wrapper around a tiny build script + snowcli to deploy the application
+        # For the wrapper source, see flake.nix
+        run: nix run .#deploy-streamlit-in-snowflake
+        env:
+          # This repo uses a custom wrapper around Snowflake CLI
+          # For alternative GH action config, see
+          # https://github.com/snowflakedb/snowflake-cli/issues/872
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SIS_QUERY_WAREHOUSE: ${{ secrets.SIS_QUERY_WAREHOUSE }}
+          SIS_GRANT_TO_ROLE: ${{ secrets.SIS_GRANT_TO_ROLE }}

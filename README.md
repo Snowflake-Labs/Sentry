@@ -98,3 +98,7 @@ https://quickstarts.snowflake.com/guide/security_dashboards_for_snowflake/index.
 https://docs.streamlit.io/streamlit-community-cloud/deploy-your-app/secrets-management
 
 [4]: ./src/queries
+
+## Contributing
+
+Please refer to [CONTRIBUTING.md](CONTRIBUTING.md).

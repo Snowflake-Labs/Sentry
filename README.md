@@ -1,4 +1,4 @@
-This is a a repository containing the Streamlit version of the [Snowflake
+This is a repository containing the Streamlit version of the [Snowflake
 security dashboards][1].
 
 # About

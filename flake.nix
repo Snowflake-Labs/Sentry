@@ -40,232 +40,192 @@
 
   outputs =
     inputs@{ flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        inputs.devshell.flakeModule
-        inputs.pre-commit-hooks-nix.flakeModule
-        inputs.treefmt-nix.flakeModule
-      ];
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-        "x86_64-darwin"
-      ];
-      perSystem =
-        { config
-        , inputs'
-        , pkgs
-        , ...
-        }:
-        let
-          inherit (pkgs.lib) getExe;
-          snowCli = pkgs.writeShellScriptBin "snow"
-            ''
-              ${pkgs.lib.getExe inputs'.snowcli.packages.snowcli-2x} --config-file <(cat<<EOF
-              [connections]
-              [connections.default]
-              account = "$SNOWFLAKE_ACCOUNT"
-              user = "$SNOWFLAKE_USER"
-              password = "$SNOWFLAKE_PASSWORD"
-              database = "$SNOWFLAKE_DATABASE"
-              schema = "$SNOWFLAKE_SCHEMA"
-              warehouse = "$SNOWFLAKE_WAREHOUSE"
-              role = "$SNOWFLAKE_ROLE"
-              EOF
-              ) $@'';
-        in
-        {
-          apps =
-            let
-              git-repository-apps =
-                let
-                  git-repository-import = import ./deployment_models/git-repository/apps.nix { inherit (pkgs) writeShellApplication; };
-                in
-                { inherit (git-repository-import) mkSprocDocs mkSingleCreateSprocFile; };
-            in
-            {
-              deploy-streamlit-in-snowflake.program = pkgs.writeShellApplication {
-                name = "deploy-streamlit-in-snowflake";
-                runtimeInputs = [ snowCli ];
-                text = ''
-                  function exit_trap(){
-                    popd
-                    popd
-                  }
-                  trap exit_trap EXIT # go back to original dir regardless of the exit codes
+    flake-parts.lib.mkFlake { inherit inputs; } (
+      { flake-parts-lib, ... }:
+      let
+        inherit (flake-parts-lib) importApply;
+      in
+      {
+        imports = [
+          inputs.devshell.flakeModule
+          inputs.pre-commit-hooks-nix.flakeModule
+          inputs.treefmt-nix.flakeModule
+          (importApply ./linters.nix { inherit flake-parts-lib; })
+        ];
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+          "aarch64-darwin"
+          "x86_64-darwin"
+        ];
+        perSystem =
+          { config
+          , inputs'
+          , pkgs
+          , ...
+          }:
+          let
+            inherit (pkgs.lib) getExe;
+            snowCli = pkgs.writeShellScriptBin "snow"
+              ''
+                ${getExe inputs'.snowcli.packages.snowcli-2x} --config-file <(cat<<EOF
+                [connections]
+                [connections.default]
+                account = "$SNOWFLAKE_ACCOUNT"
+                user = "$SNOWFLAKE_USER"
+                password = "$SNOWFLAKE_PASSWORD"
+                database = "$SNOWFLAKE_DATABASE"
+                schema = "$SNOWFLAKE_SCHEMA"
+                warehouse = "$SNOWFLAKE_WAREHOUSE"
+                role = "$SNOWFLAKE_ROLE"
+                EOF
+                ) $@'';
+          in
+          {
+            apps =
+              let
+                git-repository-apps =
+                  let
+                    git-repository-import = import ./deployment_models/git-repository/apps.nix { inherit (pkgs) writeShellApplication; };
+                  in
+                  { inherit (git-repository-import) mkSprocDocs mkSingleCreateSprocFile; };
+              in
+              {
+                deploy-streamlit-in-snowflake.program = pkgs.writeShellApplication {
+                  name = "deploy-streamlit-in-snowflake";
+                  runtimeInputs = [ snowCli ];
+                  text = ''
+                    function exit_trap(){
+                      popd
+                      popd
+                    }
+                    trap exit_trap EXIT # go back to original dir regardless of the exit codes
 
-                  PRJ_ROOT=$(git rev-parse --show-toplevel)
+                    PRJ_ROOT=$(git rev-parse --show-toplevel)
 
-                  TARGET="$PRJ_ROOT/target"
+                    TARGET="$PRJ_ROOT/target"
 
-                  pushd "$PRJ_ROOT" # cd to project root directory
+                    pushd "$PRJ_ROOT" # cd to project root directory
 
-                  rm -rf "$TARGET"
-                  cp -rf src "$TARGET"
-                  pushd "$TARGET"/
+                    rm -rf "$TARGET"
+                    cp -rf src "$TARGET"
+                    pushd "$TARGET"/
 
-                  # Create deploy-only config for the query warehouse
-                  cat >snowflake.local.yml <<EOF
-                  definition_version: 1
-                  streamlit:
-                    query_warehouse: $SIS_QUERY_WAREHOUSE
-                  EOF
+                        # Create deploy-only config for the query warehouse
+                        cat >snowflake.local.yml <<EOF
+                        definition_version: 1
+                        streamlit:
+                        query_warehouse: $SIS_QUERY_WAREHOUSE
+                        EOF
 
-                  # Deploy the application
-                  # NOTE: the CI variable check prevents the account name from being printed by suppressing all output
-                  if [ -n "''${CI+x}" ]; then
-                      exec &>/dev/null
-                  fi
-                  snow streamlit deploy --replace
+                        # Deploy the application
+                        # NOTE: the CI variable check prevents the account name from being printed by suppressing all output
+                        if [ -n "''${CI+x}" ]; then
+                        exec &>/dev/null
+                        fi
+                        snow streamlit deploy --replace
 
-                  # Grant the usage on the created Streamlit to the designated admin role
-                  cat <<EOF | snow sql -i
-                  GRANT USAGE ON STREAMLIT $SNOWFLAKE_DATABASE.$SNOWFLAKE_SCHEMA.SENTRY TO ROLE $SIS_GRANT_TO_ROLE;
-                  EOF
-                '';
-              };
-              tear-down-and-deploy-native-app-in-own-account.program = pkgs.writeShellApplication {
-                name = "tear-down-and-deploy-native-app-in-own-account";
-                runtimeInputs = [ snowCli pkgs.yq ];
-                text = ''
-                  function exit_trap(){
-                    popd
-                    popd
-                  }
-                  trap exit_trap EXIT # go back to original dir regardless of the exit codes
+                        # Grant the usage on the created Streamlit to the designated admin role
+                        cat <<EOF | snow sql -i
+                        GRANT USAGE ON STREAMLIT $SNOWFLAKE_DATABASE.$SNOWFLAKE_SCHEMA.SENTRY TO ROLE $SIS_GRANT_TO_ROLE;
+                        EOF
+                  '';
+                };
+                tear-down-and-deploy-native-app-in-own-account.program = pkgs.writeShellApplication {
+                  name = "tear-down-and-deploy-native-app-in-own-account";
+                  runtimeInputs = [ snowCli pkgs.yq ];
+                  text = ''
+                    function exit_trap(){
+                      popd
+                      popd
+                    }
+                    trap exit_trap EXIT # go back to original dir regardless of the exit codes
 
-                  PRJ_ROOT=$(git rev-parse --show-toplevel)
+                    PRJ_ROOT=$(git rev-parse --show-toplevel)
 
-                  pushd "$PRJ_ROOT" # cd to project root directory
+                    pushd "$PRJ_ROOT" # cd to project root directory
 
-                  pushd deployment_models/native-app
+                    pushd deployment_models/native-app
 
-                  # Yq is like JQ but for yaml files
-                  APP_NAME=$(yq --raw-output '."native_app"."application"."name" | ascii_upcase' ./snowflake.yml)
+                    # Yq is like JQ but for yaml files
+                    APP_NAME=$(yq --raw-output '."native_app"."application"."name" | ascii_upcase' ./snowflake.yml)
 
-                  # NOTE: the CI variable check prevents the account name from being printed by suppressing all output
-                  if [ -n "''${CI+x}" ]; then
-                      exec &>/dev/null
-                  fi
+                    # NOTE: the CI variable check prevents the account name from being printed by suppressing all output
+                    if [ -n "''${CI+x}" ]; then
+                    exec &>/dev/null
+                    fi
 
-                  snow app teardown
-                  snow app run
+                    snow app teardown
+                    snow app run
 
-                  cat <<EOF | snow sql --stdin
-                  -- Grant access to SNOWFLAKE database to the app. Since running as an unprivileged role -- need a EXECUTE AS OWNER sproc
-                  CALL srv.sentry_na_deploy.SUDO_GRANT_IMPORTED_PRIVILEGES('SENTRY');
-                  -- Share the application with a specified role
-                  GRANT APPLICATION ROLE ''${APP_NAME}.app_public TO ROLE $NA_GRANT_TO_ROLE;
-                  EOF
-                '';
-              };
+                    cat <<EOF | snow sql --stdin
+                    -- Grant access to SNOWFLAKE database to the app. Since running as an unprivileged role -- need a EXECUTE AS OWNER sproc
+                    CALL srv.sentry_na_deploy.SUDO_GRANT_IMPORTED_PRIVILEGES('SENTRY');
+                    -- Share the application with a specified role
+                    GRANT APPLICATION ROLE ''${APP_NAME}.app_public TO ROLE $NA_GRANT_TO_ROLE;
+                    EOF
+                  '';
+                };
 
-              build-and-run-in-local-docker = { type = "app"; program = import ./deployment_models/local-docker/app.nix { inherit (pkgs) writeShellApplication; }; };
+                build-and-run-in-local-docker = { type = "app"; program = import ./deployment_models/local-docker/app.nix { inherit (pkgs) writeShellApplication; }; };
 
-            } // git-repository-apps;
+              } // git-repository-apps;
 
-          # Development configuration
-          treefmt = {
-            programs = {
-              nixpkgs-fmt.enable = true;
-              deadnix = {
-                enable = true;
-                no-lambda-arg = true;
-                no-lambda-pattern-names = true;
-                no-underscore = true;
-              };
-              statix.enable = true;
-              isort = {
-                enable = true;
-                profile = "black";
-              };
-              ruff = {
-                enable = true;
-                format = true;
-              };
-            };
-            projectRootFile = "flake.nix";
-            # Vendored modules are explicitly excluded from formatter to stay as close to upstream as possible
-            settings.global.excludes = [ "./src/vendored/*" ];
-          };
-
-          pre-commit.settings =
-            # let
-            #   mdshFiles = "^src/queries/.*";
-            # in
-            {
-              hooks = {
-                treefmt.enable = true;
-                treefmt.package = config.treefmt.build.wrapper;
+            # Development configuration
+            treefmt = {
+              programs = {
+                nixpkgs-fmt.enable = true;
                 deadnix = {
                   enable = true;
-                  settings.edit = true;
+                  no-lambda-arg = true;
+                  no-lambda-pattern-names = true;
+                  no-underscore = true;
                 };
-                statix = {
+                statix.enable = true;
+                isort = {
                   enable = true;
-                  settings = {
-                    ignore = [ ".direnv/" ];
-                    format = "stderr";
-                  };
+                  profile = "black";
                 };
-                markdownlint.enable = true;
-                markdownlint.settings.configuration = {
-                  MD041 = false; # Disable "first line should be a heading check"
-                  MD010.code_blocks = false; # Do not check for hard tabs in code blocks
-                  MD013.code_blocks = false; # Do not check for long lines in code blocks
+                ruff = {
+                  enable = true;
+                  format = true;
                 };
-                ruff.enable = true;
-
-                # TODO: restore this, fail if output differs.
-                # run-mdsh-for-git-instructions = {
-                #   enable = true;
-                #   description = "Call mdsh to auto-generate the sproc instructions";
-                #   entry = "${getExe pkgs.mdsh} --inputs ./deployment_models/git-repository/README.md --frozen";
-                #   fail_fast = true;
-                #   pass_filenames = false;
-                #   files = mdshFiles;
-                # };
-                # generate-sql-file-to-create-all-sprocs = {
-                #   enable = true;
-                #   description = "Generate create_all.sql for mass SPROC install.";
-                #   entry = "nix run .#mkSingleCreateSprocFile > ./deployment_models/git-repository/create_all.sql";
-                #   fail_fast = true;
-                #   pass_filenames = false;
-                #   files = mdshFiles;
-                # };
               };
-              excludes = [ "^src/vendored" ];
+              projectRootFile = "flake.nix";
+              # Vendored modules are explicitly excluded from formatter to stay as close to upstream as possible
+              settings.global.excludes = [ "./src/vendored/*" ];
             };
 
-          devShells.pre-commit = config.pre-commit.devShell;
-          devshells.default = {
-            env = [ ];
-            commands = [
-              {
-                help = "Run local Streamlit";
-                name = "local-streamlit";
-                command = "poetry run streamlit run src/Authentication.py";
-              }
-              {
-                help = "Deploy Streamlit to the test account";
-                name = "deploy-streamlit-in-snowflake";
-                command = "nix run .#deploy-streamlit-in-snowflake";
-              }
-              {
-                help = "Deploy native app to the test account";
-                name = "tear-down-and-deploy-native-app-in-own-account";
-                command = "nix run .#tear-down-and-deploy-native-app-in-own-account";
-              }
-              {
-                help = "Build and run in local docker";
-                name = "build-and-run-in-local-docker";
-                command = "nix run .#build-and-run-in-local-docker";
-              }
-            ];
-            packages = builtins.attrValues { inherit (pkgs) jc jq mdsh; } ++ [ snowCli ];
+
+            devShells.pre-commit = config.pre-commit.devShell;
+            devshells.default = {
+              env = [ ];
+              commands = [
+                {
+                  help = "Run local Streamlit";
+                  name = "local-streamlit";
+                  command = "poetry run streamlit run src/Authentication.py";
+                }
+                {
+                  help = "Deploy Streamlit to the test account";
+                  name = "deploy-streamlit-in-snowflake";
+                  command = "nix run .#deploy-streamlit-in-snowflake";
+                }
+                {
+                  help = "Deploy native app to the test account";
+                  name = "tear-down-and-deploy-native-app-in-own-account";
+                  command = "nix run .#tear-down-and-deploy-native-app-in-own-account";
+                }
+                {
+                  help = "Build and run in local docker";
+                  name = "build-and-run-in-local-docker";
+                  command = "nix run .#build-and-run-in-local-docker";
+                }
+              ];
+              packages = builtins.attrValues { inherit (pkgs) jc jq mdsh; } ++ [ snowCli ];
+            };
           };
-        };
-      # flake = { };
-    };
+        # flake = { };
+      }
+    );
 }

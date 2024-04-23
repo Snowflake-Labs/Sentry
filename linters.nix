@@ -68,6 +68,7 @@ _: {
                 MD041 = false; # Disable "first line should be a heading check"
                 MD010.code_blocks = false; # Do not check for hard tabs in code blocks
                 MD013.code_blocks = false; # Do not check for long lines in code blocks
+                MD025 = false; # Disable "multiple top-level headings in the same document"
               };
               ruff.enable = true;
 

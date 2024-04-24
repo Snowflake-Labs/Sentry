@@ -1,5 +1,8 @@
 """Tests the Query class."""
+from operator import attrgetter
 from textwrap import dedent
+
+import pytest
 
 from common.query_proxy import Query
 
@@ -72,3 +75,20 @@ def test_sql_sproc():
 def test_sproc_name():
     """Checks that the query stored procedure name is a string."""
     assert isinstance(STUB_QUERY.sproc_name, str)
+
+
+@pytest.mark.parametrize(
+    "field,metadata_type",
+    [
+        ("tile_identifier", str),
+        ("dashboard", str),
+        ("security_features_checklist", tuple),
+        ("nist_800_53", tuple),
+        ("nist_800_171", tuple),
+        ("hitrust_csf_v9", tuple),
+        ("mitre_attack_saas", tuple),
+    ],
+)
+def test_metadata_types(field, metadata_type):
+    """A generic test that checks the expected types of metadata."""
+    assert isinstance(attrgetter(field)(STUB_QUERY), metadata_type)

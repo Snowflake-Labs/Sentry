@@ -1,9 +1,41 @@
 """Interfaces between files and tiles/stored procedures."""
 import dataclasses
 from pkgutil import get_data
-from typing import ClassVar, Tuple
+from typing import ClassVar, Optional, Tuple
+
+from pydantic import BaseModel, ConfigDict
+from pydantic.fields import Field
 
 from vendored.python_frontmatter import frontmatter
+
+
+OptionalTuple = Optional[Tuple[str, ...]]
+
+class QueryMetadata(BaseModel):
+    """Class that hosts the extraction and validation of the query metadata.
+
+    If adding a new field, make sure that:
+    - The parametrized "test_metadata_types" is expanded or a dedicated test is added in `test_classes.py`
+    - All tests pass
+    """
+
+    tile_identifier: str = Field(alias="Tile Identifier")
+    # TODO: this is completely separate from the classes in `tiles.py`.
+    dashboard: str = Field(alias="Dashboard")
+    security_features_checklist: OptionalTuple = Field(
+        alias="Security Features Checklist", default_factory=tuple
+    )
+    nist_800_53: OptionalTuple = Field(alias="NIST 800-53", default_factory=tuple)
+    nist_800_171: OptionalTuple = Field(alias="NIST 800-171", default_factory=tuple)
+    hitrust_csf_v9: OptionalTuple = Field(
+        alias="HITRUST CSF V9", default_factory=tuple
+    )
+    mitre_attack_saas: OptionalTuple = Field(
+        alias="MITRE ATT&CK (SaaS)", default_factory=tuple
+    )
+
+    # Incoming data is from YAML. Values need to be cast to str before validation
+    model_config = ConfigDict(coerce_numbers_to_str=True)
 
 
 @dataclasses.dataclass
@@ -15,6 +47,8 @@ class Query:
     _description: str = None
     _title: str = None
     _blurb: str = None
+    metadata: QueryMetadata = None
+
     # NOTE: before 3.9 it cannot be a builtin tuple(), need typing.Tuple
     _sproc_return_types: Tuple[str, str] = dataclasses.field(default_factory=tuple)
     _package_name: ClassVar[str] = "queries"
@@ -61,6 +95,8 @@ class Query:
             dict(readme_contents.get("sproc_return_types", {})).items()
         )
 
+        self.metadata = QueryMetadata(**dict(readme_contents))
+
         assert (
             self._title != ""
         ), f"Query title should not be empty. Check frontmatter of {self.source_name} README."
@@ -93,3 +129,16 @@ class Query:
                 "$$",
             ]
         )
+
+    # def __getattr__(self, item):
+    def __getattribute__(self, item):
+        """If the property is not found in the base class -- try searching for it in the metadata.
+
+        This is better than having the call site care about self.metadata.$FIELD_NAME.
+
+        Note the "object" call below, it prevents infinite recursion.
+        """
+        try:
+            return object.__getattribute__(self, item)
+        except AttributeError:
+            return object.__getattribute__(self.metadata, item)

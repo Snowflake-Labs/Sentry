@@ -68,5 +68,3 @@ pythonpath = [ "src" ]
 markers = [
     "online: Run tests requiring connection to Snowflake"
 ]
-
-[tools.pytest.markers]

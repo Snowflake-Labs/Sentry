@@ -1,15 +1,15 @@
 """Interfaces between files and tiles/stored procedures."""
 import dataclasses
 from pkgutil import get_data
-from typing import ClassVar, Optional, Tuple
+from typing import ClassVar, Optional, Tuple, Union
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.fields import Field
 
 from vendored.python_frontmatter import frontmatter
 
+OptionalTuple = Optional[Union[Tuple[str, ...], str]]
 
-OptionalTuple = Optional[Tuple[str, ...]]
 
 class QueryMetadata(BaseModel):
     """Class that hosts the extraction and validation of the query metadata.
@@ -27,9 +27,7 @@ class QueryMetadata(BaseModel):
     )
     nist_800_53: OptionalTuple = Field(alias="NIST 800-53", default_factory=tuple)
     nist_800_171: OptionalTuple = Field(alias="NIST 800-171", default_factory=tuple)
-    hitrust_csf_v9: OptionalTuple = Field(
-        alias="HITRUST CSF V9", default_factory=tuple
-    )
+    hitrust_csf_v9: OptionalTuple = Field(alias="HITRUST CSF V9", default_factory=tuple)
     mitre_attack_saas: OptionalTuple = Field(
         alias="MITRE ATT&CK (SaaS)", default_factory=tuple
     )

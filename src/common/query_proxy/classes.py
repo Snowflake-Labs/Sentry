@@ -20,6 +20,7 @@ class QueryMetadata(BaseModel):
     """
 
     tile_identifier: str = Field(alias="Tile Identifier")
+    title: str
     # TODO: this is completely separate from the classes in `tiles.py`.
     dashboard: str = Field(alias="Dashboard")
     security_features_checklist: OptionalTuple = Field(
@@ -66,11 +67,6 @@ class Query:
         return self._description
 
     @property
-    def title(self) -> str:
-        """Query title."""
-        return self._title
-
-    @property
     def blurb(self) -> str:
         """Query short description. May be empty but is a string."""
         return self._blurb
@@ -87,17 +83,12 @@ class Query:
             self._read_text(f"{self.source_name}/README.md")
         )
         self._description = readme_contents.content
-        self._title = str(readme_contents["title"])
         self._blurb = str(readme_contents.get("blurb", ""))
         self._sproc_return_types = tuple(
             dict(readme_contents.get("sproc_return_types", {})).items()
         )
 
         self.metadata = QueryMetadata(**dict(readme_contents))
-
-        assert (
-            self._title != ""
-        ), f"Query title should not be empty. Check frontmatter of {self.source_name} README."
 
     def __str__(self):
         """Return the query text of the Query."""

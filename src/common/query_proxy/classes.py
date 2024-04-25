@@ -44,7 +44,6 @@ class Query:
     source_name: str
     _query_text: str = None
     _description: str = None
-    _title: str = None
     _blurb: str = None
     metadata: QueryMetadata = None
 

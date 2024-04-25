@@ -20,11 +20,6 @@ def test_description():
     assert isinstance(STUB_QUERY.description, str)
 
 
-def test_title():
-    """Checks that the title of the query is a string."""
-    assert isinstance(STUB_QUERY.title, str)
-
-
 def test_blurb():
     """Checks that the query blurb is a string."""
     assert isinstance(STUB_QUERY.blurb, str)
@@ -80,6 +75,7 @@ def test_sproc_name():
 @pytest.mark.parametrize(
     "field,metadata_type",
     [
+        ("title", str),
         ("tile_identifier", str),
         ("dashboard", str),
         ("security_features_checklist", tuple),

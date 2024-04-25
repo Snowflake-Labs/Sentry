@@ -29,20 +29,24 @@ def _md_break_line(line: str, textwidth: int = 80) -> str:
 
 
 def _iterate_over_queries():
-    """Produce a sorted list of all queries."""
+    """Produce a sorted list of all queries.
+
+    Does not cast the value as a Query object since downstream consumer might want to tweak it.
+    """
     return pipe(
         Path(queries.__path__[0]).glob("**/"),
         sorted,
         filter(
             lambda p: p.name not in ("__pycache__", "queries"),
         ),
+        cmap(attrgetter("name")),
     )
 
 
 def render_stored_procedures():
     """Render the documentation for stored procedures."""
     for query_dir in _iterate_over_queries():
-        query = Query(query_dir.name)
+        query = Query(query_dir)
         query_blurb = query.blurb + "\n" if query.blurb else ""
 
         output = [
@@ -63,7 +67,7 @@ def render_sprocs_as_single_file():
     Used for a single EXECUTE IMMEDIATE FROM $file.
     """
     for query_dir in _iterate_over_queries():
-        query = Query(query_dir.name)
+        query = Query(query_dir)
         print(query.as_sql_sproc() + ";")
 
 

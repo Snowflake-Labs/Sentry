@@ -137,6 +137,8 @@ def render_queries_as_a_table() -> None:
         cmap(dict),
         # Load into a dataframe
         partial(DataFrame.from_records),
+        # Drop unneeded columns
+        partial(DataFrame.drop, columns=["blurb"]),
         # Print
         partial(DataFrame.to_markdown, index=False),
         print,

@@ -86,9 +86,14 @@
               let
                 git-repository-apps =
                   let
-                    git-repository-import = import ./deployment_models/git-repository/apps.nix { inherit (pkgs) writeShellApplication; };
+                    imp = import ./docs/apps.nix { inherit (pkgs) writeShellApplication; };
                   in
-                  { inherit (git-repository-import) mkSprocDocs mkSingleCreateSprocFile; };
+                  { inherit (imp) mkSprocDocs mkSingleCreateSprocFile; };
+                doc-apps =
+                  let
+                    imp = import ./docs/apps.nix { inherit (pkgs) writeShellApplication; };
+                  in
+                  { inherit (imp) renderSentryControlMappingTable; };
               in
               {
                 deploy-streamlit-in-snowflake.program = pkgs.writeShellApplication {
@@ -169,7 +174,11 @@
 
                 build-and-run-in-local-docker = { type = "app"; program = import ./deployment_models/local-docker/app.nix { inherit (pkgs) writeShellApplication; }; };
 
-              } // git-repository-apps;
+              }
+              // git-repository-apps
+              // doc-apps
+              # TODO: clean this up
+            ;
 
             # Development configuration
             treefmt = {

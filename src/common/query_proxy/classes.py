@@ -21,6 +21,7 @@ class QueryMetadata(BaseModel):
 
     tile_identifier: str = Field(alias="Tile Identifier")
     title: str
+    blurb: str = Field(default="")
     # TODO: this is completely separate from the classes in `tiles.py`.
     dashboard: str = Field(alias="Dashboard")
     security_features_checklist: OptionalTuple = Field(
@@ -44,7 +45,6 @@ class Query:
     source_name: str
     _query_text: str = None
     _description: str = None
-    _blurb: str = None
     metadata: QueryMetadata = None
 
     # NOTE: before 3.9 it cannot be a builtin tuple(), need typing.Tuple
@@ -66,11 +66,6 @@ class Query:
         return self._description
 
     @property
-    def blurb(self) -> str:
-        """Query short description. May be empty but is a string."""
-        return self._blurb
-
-    @property
     def sproc_return_types(self) -> Tuple[str, str]:
         """Query title."""
         return self._sproc_return_types
@@ -82,7 +77,6 @@ class Query:
             self._read_text(f"{self.source_name}/README.md")
         )
         self._description = readme_contents.content
-        self._blurb = str(readme_contents.get("blurb", ""))
         self._sproc_return_types = tuple(
             dict(readme_contents.get("sproc_return_types", {})).items()
         )

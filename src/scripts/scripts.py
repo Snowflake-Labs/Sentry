@@ -1,7 +1,10 @@
 """Python project management scripts."""
 import math
+from functools import cmp_to_key, partial
+from operator import attrgetter
 from pathlib import Path
 
+from pandas import DataFrame
 from toolz import pipe
 from toolz.curried import filter
 from toolz.curried import map as cmap
@@ -100,3 +103,46 @@ def table_sort_compare(left: str, right: str) -> int:
 
     return int(math.copysign(1, result))
 
+
+def render_queries_as_a_table() -> None:
+    """Print single table that maps queries to specific controls."""
+    pipe(
+        _iterate_over_queries(),
+        # Filter for a sample that is filled in
+        # TODO: remove this filter when merging
+        filter(
+            lambda x: x
+            in {
+                "num_failures",
+                "grants_to_public",
+                "privileged_object_changes_by_user",
+                "stale_users",
+                "most_dangerous_person",
+            }
+        ),
+        # Create Query instances
+        cmap(Query),
+        # Apply order by the tile_identifier prop
+        partial(
+            sorted,
+            key=cmp_to_key(
+                lambda left, right: table_sort_compare(
+                    left.tile_identifier, right.tile_identifier
+                )
+            ),
+        ),
+        # Extract only metadata attribute
+        cmap(attrgetter("metadata")),
+        # Turn it into a dict
+        cmap(dict),
+        # Load into a dataframe
+        partial(DataFrame.from_records),
+        # Print
+        partial(DataFrame.to_markdown, index=False),
+        print,
+    )
+
+
+if __name__ == "__main__":
+    # TODO: Drop this when merging
+    render_queries_as_a_table()

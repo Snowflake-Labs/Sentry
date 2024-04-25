@@ -1,9 +1,10 @@
 """Interfaces between files and tiles/stored procedures."""
 import dataclasses
+import sys
 from pkgutil import get_data
-from typing import ClassVar, Optional, Tuple, Union
+from typing import Any, ClassVar, Optional, Tuple, Union
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_serializer, field_validator
 from pydantic.fields import Field
 
 from vendored.python_frontmatter import frontmatter
@@ -36,6 +37,25 @@ class QueryMetadata(BaseModel):
 
     # Incoming data is from YAML. Values need to be cast to str before validation
     model_config = ConfigDict(coerce_numbers_to_str=True)
+
+    def model_post_init(self, __context: Any) -> None:
+        """Perform data normalization post-init."""
+        for field in [
+            "security_features_checklist",
+            "nist_800_53",
+            "nist_800_171",
+            "hitrust_csf_v9",
+            "mitre_attack_saas",
+        ]:
+            field_val = getattr(self, field)
+
+            # Make sure
+            if field_val == ():
+                setattr(self, field, None)
+
+            # If the tuple has only one element, unwrap it
+            if field_val is not None and len(field_val) == 1:
+                setattr(self, field, field_val[0])
 
 
 @dataclasses.dataclass

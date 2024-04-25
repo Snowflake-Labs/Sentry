@@ -1,8 +1,10 @@
 """Python project management scripts."""
+import math
 from pathlib import Path
 
 from toolz import pipe
 from toolz.curried import filter
+from toolz.curried import map as cmap
 
 import queries
 from common.query_proxy import Query
@@ -63,3 +65,34 @@ def render_sprocs_as_single_file():
     for query_dir in _iterate_over_queries():
         query = Query(query_dir.name)
         print(query.as_sql_sproc() + ";")
+
+
+def table_sort_compare(left: str, right: str) -> int:
+    """Compare by the custom identifier order.
+
+    The string part is compared through dictionary, the numeric part through natural order.
+
+    Effective:
+
+    AUTH-10, USER-1 -> -1
+    AUTH-1, AUTH-1 -> 0
+    AUTH-10, AUTH-1 -> 1
+
+    """
+    sort_order = {"AUTH": 0, "CONFIG": 1, "SECRETS": 2, "USER": 3, "ROLES": 4}
+    l, r = pipe(
+        [left, right],  # [ AUTH-1, AUTH-10 ]
+        cmap(lambda s: str.split(s, "-")),  # [[AUTH, "1"], [AUTH, "10"]
+        cmap(lambda x: [x[0], int(x[1])]),  # [[AUTH, 1], [AUTH, 10]]
+        tuple,  # Materialize, otherwise map object will be consumed
+        # lambda li: sort_order[li[0][0]] < sort_order[li[1][0]] or li[0][1] < li[1][1]
+    )
+    if l == r:
+        return 0
+    if l[0] != r[0]:
+        result = sort_order[l[0]] - sort_order[r[0]]
+    else:
+        result = l[1] - r[1]
+
+    return int(math.copysign(1, result))
+

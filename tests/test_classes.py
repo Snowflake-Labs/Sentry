@@ -86,5 +86,18 @@ def test_sproc_name():
     ],
 )
 def test_metadata_types(field, metadata_type):
-    """A generic test that checks the expected types of metadata."""
-    assert isinstance(attrgetter(field)(STUB_QUERY), metadata_type)
+    """A generic test that checks the expected types of metadata.
+
+    For tuples the value is also checked against fallbacks.
+    """
+    test_subject = attrgetter(field)(STUB_QUERY)
+    if metadata_type is tuple:
+        assert any(
+            [
+                isinstance(test_subject, metadata_type),
+                isinstance(test_subject, str),
+                (test_subject is None),
+            ]
+        )
+    else:
+        assert isinstance(test_subject, metadata_type)

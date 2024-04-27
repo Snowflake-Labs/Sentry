@@ -5,8 +5,8 @@ Dashboard: Secrets & Privileged Access
 Security Features Checklist: A13
 NIST 800-53: AC-3(7)
 NIST 800-171:
-HITRUST CSF v9:
-MITRE ATT&CK (SaaS): PR.AC-4:G1
+HITRUST CSF v9: PR.AC-4:G1
+MITRE ATT&CK (SaaS):
 ---
 
 <!-- TODO -->

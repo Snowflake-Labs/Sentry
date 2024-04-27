@@ -106,6 +106,12 @@ def table_sort_compare(left: str, right: str) -> int:
 
 def render_queries_as_a_table() -> None:
     """Print single table that maps queries to specific controls."""
+
+    def _columns_printable(val):
+        if isinstance(val, tuple):
+            return ", ".join(map(str, val))
+        return val
+
     pipe(
         _iterate_over_queries(),
         # TODO: Once the metadata is filled in, remove the filter
@@ -136,6 +142,8 @@ def render_queries_as_a_table() -> None:
         cmap(dict),
         # Load into a dataframe
         partial(DataFrame.from_records),
+        # Apply formatting
+        partial(DataFrame.applymap, func=_columns_printable),
         # Drop unneeded columns
         partial(DataFrame.drop, columns=["blurb"]),
         # Print

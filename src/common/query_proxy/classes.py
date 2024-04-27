@@ -30,7 +30,7 @@ class QueryMetadata(BaseModel):
     )
     nist_800_53: OptionalTuple = Field(alias="NIST 800-53", default_factory=tuple)
     nist_800_171: OptionalTuple = Field(alias="NIST 800-171", default_factory=tuple)
-    hitrust_csf_v9: OptionalTuple = Field(alias="HITRUST CSF V9", default_factory=tuple)
+    hitrust_csf_v9: OptionalTuple = Field(alias="HITRUST CSF v9", default_factory=tuple)
     mitre_attack_saas: OptionalTuple = Field(
         alias="MITRE ATT&CK (SaaS)", default_factory=tuple
     )

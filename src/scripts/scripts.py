@@ -108,16 +108,13 @@ def render_queries_as_a_table() -> None:
     """Print single table that maps queries to specific controls."""
     pipe(
         _iterate_over_queries(),
-        # Filter for a sample that is filled in
-        # TODO: remove this filter when merging
+        # TODO: Once the metadata is filled in, remove the filter
         filter(
             lambda x: x
-            in {
-                "num_failures",
-                "grants_to_public",
-                "privileged_object_changes_by_user",
-                "stale_users",
-                "most_dangerous_person",
+            not in {
+                "auth_by_method",
+                "accountadmin_no_mfa",
+                "scim_token_lifecycle",
             }
         ),
         # Create Query instances
@@ -145,8 +142,3 @@ def render_queries_as_a_table() -> None:
         partial(DataFrame.to_markdown, index=False),
         print,
     )
-
-
-if __name__ == "__main__":
-    # TODO: Drop this when merging
-    render_queries_as_a_table()

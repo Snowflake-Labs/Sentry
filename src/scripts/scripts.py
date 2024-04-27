@@ -114,15 +114,6 @@ def render_queries_as_a_table() -> None:
 
     pipe(
         _iterate_over_queries(),
-        # TODO: Once the metadata is filled in, remove the filter
-        filter(
-            lambda x: x
-            not in {
-                "auth_by_method",
-                "accountadmin_no_mfa",
-                "scim_token_lifecycle",
-            }
-        ),
         # Create Query instances
         cmap(Query),
         # Apply order by the tile_identifier prop

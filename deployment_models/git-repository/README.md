@@ -126,7 +126,7 @@ END
 $$
 ```
 
-### Service identities bypassing keypair authentication with a password
+### Key Pair Bypass (Password)
 
 **Note:** this query would need to be adjusted to reflect the service user
 naming convention.
@@ -179,7 +179,7 @@ $$
 
 ### Bloated roles
 
-Roles with biggest amount of effective privileges
+Roles with largest amount of effective privileges
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_bloated_roles ()
@@ -279,7 +279,7 @@ END
 $$
 ```
 
-### No Default Role or Default is ACCOUNTADMIN
+### Default Role is ACCOUNTADMIN
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_default_role_check ()
@@ -390,7 +390,7 @@ END
 $$
 ```
 
-### Most Dangerous Person
+### Most Dangerous User
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_most_dangerous_person ()
@@ -501,7 +501,7 @@ END
 $$
 ```
 
-### Network Policy Changes
+### Network Policy Change Management
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_network_policy_changes ()
@@ -525,7 +525,7 @@ END
 $$
 ```
 
-### Failures, by User and Reason
+### Login failures, by User and Reason
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_num_failures ()
@@ -555,7 +555,7 @@ END
 $$
 ```
 
-### Privileged object changes by User
+### Privileged Object Management
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_privileged_object_changes_by_user ()
@@ -668,7 +668,7 @@ END
 $$
 ```
 
-### Users by oldest Passwords
+### Users by Password Age
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_users_by_oldest_passwords ()

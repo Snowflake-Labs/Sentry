@@ -133,6 +133,8 @@ def render_queries_as_a_table() -> None:
         ),
         # Extract only metadata attribute
         cmap(attrgetter("metadata")),
+        # TODO: Human-readable column names, not technical ones
+        # Maybe just serialize and load the json?
         # Turn it into a dict
         cmap(dict),
         # Load into a dataframe

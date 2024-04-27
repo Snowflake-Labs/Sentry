@@ -86,7 +86,7 @@
               let
                 git-repository-apps =
                   let
-                    imp = import ./docs/apps.nix { inherit (pkgs) writeShellApplication; };
+                    imp = import ./deployment_models/git-repository/apps.nix { inherit (pkgs) writeShellApplication; };
                   in
                   { inherit (imp) mkSprocDocs mkSingleCreateSprocFile; };
                 doc-apps =

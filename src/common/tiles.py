@@ -35,6 +35,7 @@ from common.queries import (
     USER_ROLE_RATIO,
     USERS_BY_OLDEST_PASSWORDS,
 )
+import common.queries as queries
 from common.query_proxy import Query
 
 
@@ -160,4 +161,5 @@ SharingTiles = _mk_tiles(
     SHARING_LISTING_ALTER,
     SHARING_LISTING_USAGE,
     SHARING_REPLICATION_HISTORY,
+    queries.SHARING_AGGREGATE_ACCESS_OVER_TIME_BY_CONSUMER,
 )

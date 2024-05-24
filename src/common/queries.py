@@ -49,3 +49,7 @@ SHARING_LISTING_ALTER = Query("sharing_listings_alter")
 SHARING_LISTING_USAGE = Query("sharing_listing_usage")
 
 SHARING_REPLICATION_HISTORY = Query("sharing_replication_history")
+
+SHARING_AGGREGATE_ACCESS_OVER_TIME_BY_CONSUMER = Query(
+    "sharing_access_over_time_by_consumer"
+)

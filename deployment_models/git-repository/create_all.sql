@@ -496,6 +496,197 @@ order by
 RETURN TABLE(res);
 END
 $$;
+CREATE OR REPLACE PROCEDURE SENTRY_sharing_access_count_by_column ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(select
+  los.value:"objectDomain"::string as object_type,
+  los.value:"objectName"::string as object_name,
+  cols.value:"columnName"::string as column_name,
+  count(distinct lah.query_token) as n_queries,
+  count(distinct lah.consumer_account_locator) as n_distinct_consumer_accounts
+from SNOWFLAKE.DATA_SHARING_USAGE.LISTING_ACCESS_HISTORY as lah
+join lateral flatten(input=>lah.listing_objects_accessed) as los
+join lateral flatten(input=>los.value, path=>'columns') as cols
+where true
+  and los.value:"objectDomain"::string in ('Table', 'View')
+  and query_date between '2024-03-21' and '2024-03-30'
+  and los.value:"objectName"::string = 'db1.schema1.sec_view1'
+  and lah.consumer_account_locator = 'BATC4932'
+group by 1,2,3
+);
+RETURN TABLE(res);
+END
+$$;
+CREATE OR REPLACE PROCEDURE SENTRY_sharing_access_over_time_by_consumer ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(select
+  lah.exchange_name,
+  lah.listing_global_name,
+  lah.share_name,
+  los.value:"objectName"::string as object_name,
+  coalesce(los.value:"objectDomain"::string, los.value:"objectDomain"::string) as object_type,
+  consumer_account_locator,
+  count(distinct lah.query_token) as n_queries
+from SNOWFLAKE.DATA_SHARING_USAGE.LISTING_ACCESS_HISTORY as lah
+join lateral flatten(input=>lah.listing_objects_accessed) as los
+where true
+  and query_date between '2024-03-21' and '2024-03-30'
+group by 1,2,3,4,5,6
+order by 1,2,3,4,5,6
+);
+RETURN TABLE(res);
+END
+$$;
+CREATE OR REPLACE PROCEDURE SENTRY_sharing_listing_usage ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(SELECT
+  listing_name,
+  listing_display_name,
+  event_date,
+  event_type,
+  SUM(1) AS count_gets_requests
+FROM snowflake.data_sharing_usage.listing_events_daily
+GROUP BY 1,2,3,4
+);
+RETURN TABLE(res);
+END
+$$;
+CREATE OR REPLACE PROCEDURE SENTRY_sharing_listings_alter ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(select
+    user_name || ' altered a listing at ' || end_time as Description, execution_status, query_text as Statement
+from
+    SNOWFLAKE.ACCOUNT_USAGE.query_history
+where
+    query_type = 'ALTER'
+    and query_text ilike '%alter%listing%'
+order by
+    end_time desc
+);
+RETURN TABLE(res);
+END
+$$;
+CREATE OR REPLACE PROCEDURE SENTRY_sharing_reader_creation_monitor ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(select
+    user_name || ' tried to create a managed account at ' || end_time as Description, execution_status, query_text as Statement
+from
+    SNOWFLAKE.ACCOUNT_USAGE.query_history
+where
+    query_type = 'CREATE'
+    and query_text ilike '%managed%account%'
+order by
+    end_time desc
+);
+RETURN TABLE(res);
+END
+$$;
+CREATE OR REPLACE PROCEDURE SENTRY_sharing_replication_history ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(SELECT
+    *
+FROM
+    snowflake.account_usage.replication_usage_history
+WHERE
+    TO_DATE(START_TIME) BETWEEN
+        dateadd(d, -7, current_date) AND current_date
+);
+RETURN TABLE(res);
+END
+$$;
+CREATE OR REPLACE PROCEDURE SENTRY_sharing_share_alter ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(select
+    user_name || ' altered a share at ' || end_time as Description, execution_status, query_text as Statement
+from
+    SNOWFLAKE.ACCOUNT_USAGE.query_history
+where
+    query_type = 'ALTER'
+    and query_text ilike '%alter%share%'
+order by
+    end_time desc
+);
+RETURN TABLE(res);
+END
+$$;
+CREATE OR REPLACE PROCEDURE SENTRY_sharing_table_joins_by_consumer ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(with
+accesses as (
+  select distinct
+    los.value:"objectDomain"::string as object_type,
+    los.value:"objectName"::string as object_name,
+    lah.query_token,
+    lah.consumer_account_locator
+  from SNOWFLAKE.DATA_SHARING_USAGE.LISTING_ACCESS_HISTORY as lah
+  join lateral flatten(input=>lah.listing_objects_accessed) as los
+  where true
+    and los.value:"objectDomain"::string in ('Table', 'View')
+    and query_date between '2024-03-21' and '2024-03-30'
+)
+select
+  a1.object_name as object_name_1,
+  a2.object_name as object_name_2,
+  a1.consumer_account_locator as consumer_account_locator,
+  count(distinct a1.query_token) as n_queries
+from accesses as a1
+join accesses as a2
+  on a1.query_token = a2.query_token
+  and a1.object_name < a2.object_name
+group by 1,2,3
+
+);
+RETURN TABLE(res);
+END
+$$;
 CREATE OR REPLACE PROCEDURE SENTRY_stale_users ()
 RETURNS TABLE()
 LANGUAGE SQL

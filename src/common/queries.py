@@ -43,3 +43,5 @@ LEAST_USED_ROLE_GRANTS = Query("least_used_role_grants")
 SHARING_READER_CREATION_MONITOR = Query("sharing_reader_creation_monitor")
 
 SHARING_SHARE_ALTER = Query("sharing_share_alter")
+
+SHARING_LISTING_ALTER = Query("sharing_listings_alter")

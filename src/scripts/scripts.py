@@ -86,7 +86,14 @@ def table_sort_compare(left: str, right: str) -> int:
     AUTH-10, AUTH-1 -> 1
 
     """
-    sort_order = {"AUTH": 0, "CONFIG": 1, "SECRETS": 2, "USER": 3, "ROLES": 4}
+    sort_order = {
+        "AUTH": 0,
+        "CONFIG": 1,
+        "SECRETS": 2,
+        "USER": 3,
+        "ROLES": 4,
+        "SHARING": 5,
+    }
     l, r = pipe(
         [left, right],  # [ AUTH-1, AUTH-10 ]
         cmap(lambda s: str.split(s, "-")),  # [[AUTH, "1"], [AUTH, "10"]
@@ -97,7 +104,11 @@ def table_sort_compare(left: str, right: str) -> int:
     if l == r:
         return 0
     if l[0] != r[0]:
-        result = sort_order[l[0]] - sort_order[r[0]]
+        try:
+            result = sort_order[l[0]] - sort_order[r[0]]
+        except KeyError as e:
+            print("Key not found. Make sure that the key exists in comparison dict.")
+            raise e
     else:
         result = l[1] - r[1]
 

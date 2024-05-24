@@ -53,3 +53,5 @@ SHARING_REPLICATION_HISTORY = Query("sharing_replication_history")
 SHARING_AGGREGATE_ACCESS_OVER_TIME_BY_CONSUMER = Query(
     "sharing_access_over_time_by_consumer"
 )
+
+SHARING_ACCESS_COUNT_BY_COLUMN = Query("sharing_access_count_by_column")

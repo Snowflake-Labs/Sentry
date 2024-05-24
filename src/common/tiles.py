@@ -26,6 +26,7 @@ from common.queries import (
     NUM_FAILURES,
     PRIVILEGED_OBJECT_CHANGES_BY_USER,
     SCIM_TOKEN_LIFECYCLE,
+    SHARING_READER_CREATION_MONITOR,
     STALE_USERS,
     USER_ROLE_RATIO,
     USERS_BY_OLDEST_PASSWORDS,
@@ -147,4 +148,8 @@ ConfigurationManagementTiles = _mk_tiles(
         ),
     },
     NETWORK_POLICY_CHANGES,
+)
+
+SharingTiles = _mk_tiles(
+    SHARING_READER_CREATION_MONITOR,
 )

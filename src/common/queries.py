@@ -41,3 +41,5 @@ AVG_NUMBER_OF_ROLE_GRANTS_PER_USER = Query("avg_number_of_role_grants_per_user")
 LEAST_USED_ROLE_GRANTS = Query("least_used_role_grants")
 
 SHARING_READER_CREATION_MONITOR = Query("sharing_reader_creation_monitor")
+
+SHARING_SHARE_ALTER = Query("sharing_share_alter")

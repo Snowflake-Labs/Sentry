@@ -1,10 +1,10 @@
 """Contains implementation and definitions of Tiles -- the main helper object of this app.
 
-Tiles are self-contained objects that combine the query to fetch the data with the method of rendering a tile on the page.
+Tiles are self-contained objects that combine the query to fetch the data with the method of rendering a tile on the
+page.
 """
-from collections import namedtuple
 from functools import partial
-from typing import Any, Callable, Iterable, NamedTuple
+from typing import Any, Callable, Generator, NamedTuple
 
 import altair as alt
 import streamlit as st
@@ -68,7 +68,7 @@ def render(tile: Tile) -> Any:
     return tile.render()
 
 
-def _mk_tiles(*tiles) -> tuple:
+def _mk_tiles(*tiles) -> Generator[Tile, Any, None]:
     """Generate Tile instances by unpacking the provided iterable."""
     return (Tile(**i) if isinstance(i, dict) else Tile(query=i) for i in tiles)
 

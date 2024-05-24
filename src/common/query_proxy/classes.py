@@ -1,10 +1,9 @@
 """Interfaces between files and tiles/stored procedures."""
 import dataclasses
-import sys
 from pkgutil import get_data
 from typing import Any, ClassVar, Optional, Tuple, Union
 
-from pydantic import BaseModel, ConfigDict, field_serializer, field_validator
+from pydantic import BaseModel, ConfigDict
 from pydantic.fields import Field
 
 from vendored.python_frontmatter import frontmatter

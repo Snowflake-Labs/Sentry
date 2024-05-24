@@ -9,4 +9,4 @@ HITRUST CSF v9:
 MITRE ATT&CK (SaaS):
 ---
 
-<!-- TODO -->
+For a given object (table, view), how many times each column was accessed.

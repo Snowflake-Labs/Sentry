@@ -1,4 +1,7 @@
-select *
-  from table(information_schema.replication_usage_history(
-    date_range_start=>dateadd(d, -7, current_date),
-    date_range_end=>current_date));
+SELECT
+    *
+FROM
+    snowflake.account_usage.replication_usage_history
+WHERE
+    TO_DATE(START_TIME) BETWEEN
+        dateadd(d, -7, current_date) AND current_date;

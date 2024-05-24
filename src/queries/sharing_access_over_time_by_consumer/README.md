@@ -9,4 +9,5 @@ HITRUST CSF v9:
 MITRE ATT&CK (SaaS):
 ---
 
-<!-- TODO -->
+An aggregate view of which functions, stored procedures, tables, views, and
+columns have been accessed (over a certain time period) broken down by consumer.

@@ -165,3 +165,16 @@ SharingTiles = _mk_tiles(
     queries.SHARING_ACCESS_COUNT_BY_COLUMN,
     queries.SHARING_TABLE_JOINS_BY_CONSUMER,
 )
+
+TempTiles = _mk_tiles(
+    queries.TEMP_IP_LOGINS,
+    queries.TEMP_FACTOR_BREAKDOWN,
+    queries.TEMP_IPS_WITH_FACTOR,
+    queries.TEMP_STATIC_CREDS,
+    queries.TEMP_QUERY_HISTORY,
+    queries.TEMP_AUTH_FACTOR_BY_METHOD,
+    queries.TEMP_ACCOUNTADMIN_GRANTS,
+    queries.TEMP_ACCOUNTADMINS_NO_MFA,
+    queries.TEMP_NETWORK_POLICY_CHANGE_MANAGEMENT,
+    queries.TEMP_ANOMALOUS_APPLICATION_ACCESS,
+)

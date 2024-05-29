@@ -57,3 +57,25 @@ SHARING_AGGREGATE_ACCESS_OVER_TIME_BY_CONSUMER = Query(
 SHARING_ACCESS_COUNT_BY_COLUMN = Query("sharing_access_count_by_column")
 
 SHARING_TABLE_JOINS_BY_CONSUMER = Query("sharing_table_joins_by_consumer")
+
+# Temporary tiles; to be revised later
+
+TEMP_IP_LOGINS = Query("temp_ip_logins")
+
+TEMP_FACTOR_BREAKDOWN = Query("temp_factor_breakdown")
+
+TEMP_IPS_WITH_FACTOR = Query("temp_ips_with_factor")
+
+TEMP_STATIC_CREDS = Query("temp_static_creds")
+
+TEMP_QUERY_HISTORY = Query("temp_query_history")
+
+TEMP_AUTH_FACTOR_BY_METHOD = Query("temp_auth_factor_by_method")
+
+TEMP_ACCOUNTADMIN_GRANTS = Query("temp_accountadmin_grants")
+
+TEMP_ACCOUNTADMINS_NO_MFA = Query("temp_accountadmins_no_mfa")
+
+TEMP_NETWORK_POLICY_CHANGE_MANAGEMENT = Query("temp_network_policy_change_management")
+
+TEMP_ANOMALOUS_APPLICATION_ACCESS = Query("temp_anomalous_application_access")

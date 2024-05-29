@@ -93,6 +93,7 @@ def table_sort_compare(left: str, right: str) -> int:
         "USER": 3,
         "ROLES": 4,
         "SHARING": 5,
+        "TEMP": 6,
     }
     l, r = pipe(
         [left, right],  # [ AUTH-1, AUTH-10 ]

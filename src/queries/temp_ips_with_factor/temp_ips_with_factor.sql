@@ -59,5 +59,4 @@ and client_ip in (
     '93.21.79.57',
     '96.44.191.140'
 )
-and reported_client_type='JDBC'
 order by event_timestamp desc;

@@ -70,10 +70,4 @@ TEMP_STATIC_CREDS = Query("temp_static_creds")
 
 TEMP_QUERY_HISTORY = Query("temp_query_history")
 
-TEMP_AUTH_FACTOR_BY_METHOD = Query("temp_auth_factor_by_method")
-
-TEMP_ACCOUNTADMIN_GRANTS = Query("temp_accountadmin_grants")
-
-TEMP_ACCOUNTADMINS_NO_MFA = Query("temp_accountadmins_no_mfa")
-
 TEMP_ANOMALOUS_APPLICATION_ACCESS = Query("temp_anomalous_application_access")

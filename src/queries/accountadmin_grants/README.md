@@ -9,6 +9,12 @@ MITRE ATT&CK (SaaS): [
 "T1546 - Event Triggered Escalation",
 "T1098 - Account Manipulation"
 ]
+blurb: "All existing and especially new AA grants should be few, rare and well-justified."
 ---
 
-<!-- TODO -->
+The “root” or superuser of your Snowflake account is an ACCOUNTADMIN (AA) role
+grant.
+
+See "Using the ACCOUNTADMIN Role" documentation [here][1].
+
+[1]: https://docs.snowflake.com/en/user-guide/security-access-control-considerations#using-the-accountadmin-role

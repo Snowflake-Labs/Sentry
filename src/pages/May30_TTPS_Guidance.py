@@ -3,6 +3,6 @@
 from toolz import pipe
 from toolz.curried import map
 
-from common.tiles import TempTiles, render
+from common.tiles import May30TTPsGuidanceTiles, render
 
-pipe(TempTiles, map(render), list)
+pipe(May30TTPsGuidanceTiles, map(render), list)

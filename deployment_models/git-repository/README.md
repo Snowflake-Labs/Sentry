@@ -52,6 +52,9 @@ The complete list:
 <!-- BEGIN mdsh -->
 ### ACCOUNTADMIN Grants
 
+All existing and especially new AA grants should be few, rare and
+well-justified.
+
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_accountadmin_grants ()
 RETURNS TABLE()
@@ -102,6 +105,8 @@ $$
 ```
 
 ### Breakdown by Method
+
+Recommendation: enforce modern authentication via SAML, Key Pair, OAUTH.
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_auth_by_method ()
@@ -384,6 +389,283 @@ nvl(times_used, 0) times_used, datediff(day, created_on, current_timestamp()) ||
 from SNOWFLAKE.ACCOUNT_USAGE.grants_to_users
 left join least_used_roles on user_name = grantee_name and role = role_name
 where deleted_on is null order by last_used, times_used, age desc
+);
+RETURN TABLE(res);
+END
+$$
+```
+
+### Anomalous Application Access
+
+```sql
+CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_anomalous_application_access ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(SELECT
+    COUNT(*) AS client_app_count,
+    PARSE_JSON(client_environment) :APPLICATION :: STRING AS client_application,
+    PARSE_JSON(client_environment) :OS :: STRING AS client_os,
+    PARSE_JSON(client_environment) :OS_VERSION :: STRING AS client_os_version
+FROM
+    snowflake.account_usage.sessions sessions
+WHERE
+    1 = 1
+    AND sessions.created_on >= '2024-04-01'
+GROUP BY
+    ALL
+ORDER BY
+    1 DESC
+
+);
+RETURN TABLE(res);
+END
+$$
+```
+
+### Aggregate of client IPs leveraged at authentication for service discovery
+
+```sql
+CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_factor_breakdown ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(select client_ip, user_name, reported_client_type, first_authentication_factor, count(*)
+from snowflake.account_usage.login_history
+group by client_ip, user_name, reported_client_type, first_authentication_factor
+order by count(*) desc
+);
+RETURN TABLE(res);
+END
+$$
+```
+
+### Monitored IPs logins
+
+Current IOC's are tied to the listed IP's, often leveraging a JDBC driver, and
+authenticating via a Password stored locally in Snowflake.
+
+```sql
+CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_ip_logins ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(--
+SELECT
+    *
+FROM
+    snowflake.account_usage.login_history
+WHERE
+    client_ip IN (
+'102.165.16.161',
+'104.129.24.124',
+'104.223.91.28',
+'146.70.117.210',
+'146.70.117.56',
+'146.70.124.216',
+'146.70.165.227',
+'146.70.166.176',
+'146.70.171.112',
+'146.70.171.99',
+'154.47.30.137',
+'154.47.30.150',
+'169.150.201.25',
+'169.150.203.22',
+'173.44.63.112',
+'176.123.6.193',
+'184.147.100.29',
+'185.156.46.163',
+'185.213.155.241',
+'185.248.85.14',
+'185.248.85.59',
+'192.252.212.60',
+'193.32.126.233',
+'194.230.144.126',
+'198.44.129.82',
+'198.44.136.56',
+'198.44.136.82',
+'198.54.130.153',
+'198.54.131.152',
+'198.54.135.67',
+'198.54.135.99',
+'204.152.216.105',
+'206.217.205.49',
+'37.19.210.21',
+'37.19.210.34',
+'45.134.142.200',
+'45.86.221.146',
+'66.115.189.247',
+'66.63.167.147',
+'87.249.134.11',
+'93.115.0.49',
+'96.44.191.140'
+    )
+ORDER BY
+event_timestamp
+);
+RETURN TABLE(res);
+END
+$$
+```
+
+### Authentication patterns ordered by timestamp
+
+```sql
+CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_ips_with_factor ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(-- NOTE: IP list is sorted
+select event_timestamp, event_type, user_name, client_ip, reported_client_type, first_authentication_factor, second_authentication_factor, is_success
+from snowflake.account_usage.login_history
+where first_authentication_factor='PASSWORD'
+and client_ip in (
+    '104.129.24.124',
+    '104.223.91.28',
+    '104.223.91.28',
+    '146.70.117.210',
+    '146.70.117.210',
+    '146.70.117.210',
+    '146.70.117.210',
+    '146.70.117.56',
+    '146.70.124.216',
+    '146.70.165.227',
+    '146.70.166.176',
+    '146.70.171.112',
+    '146.70.171.99',
+    '154.47.30.137',
+    '154.47.30.150',
+    '169.150.201.25',
+    '169.150.203.22',
+    '169.150.203.22',
+    '173.44.63.112',
+    '176.123.6.193',
+    '184.147.100.29',
+    '185.156.46.163',
+    '185.213.155.241',
+    '192.252.212.60',
+    '193.32.126.233',
+    '193.32.126.233',
+    '194.230.144.126',
+    '198.44.129.82',
+    '198.44.136.56',
+    '198.44.136.82',
+    '198.54.130.153',
+    '198.54.130.153',
+    '198.54.130.153',
+    '198.54.135.67',
+    '198.54.135.99',
+    '198.54.135.99',
+    '204.152.216.105',
+    '206.217.205.49',
+    '206.217.206.108',
+    '37.19.210.21',
+    '37.19.210.34',
+    '45.134.142.200',
+    '45.134.142.200',
+    '45.134.142.200',
+    '45.86.221.146',
+    '45.86.221.146',
+    '45.86.221.146',
+    '66.115.189.247',
+    '66.115.189.247',
+    '66.63.167.147',
+    '87.249.134.11',
+    '93.115.0.49',
+    '93.21.79.57',
+    '93.21.79.57',
+    '96.44.191.140'
+)
+order by event_timestamp desc
+);
+RETURN TABLE(res);
+END
+$$
+```
+
+### Monitored query history
+
+```sql
+CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_query_history ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(SELECT
+  query_text,
+  user_name,
+  role_name,
+  end_time
+FROM snowflake.account_usage.query_history
+  WHERE execution_status = 'SUCCESS'
+    AND query_type NOT in ('SELECT')
+    --AND user_name= '<USER>'
+    AND (query_text ILIKE '%create role%'
+        OR query_text ILIKE '%manage grants%'
+        OR query_text ILIKE '%create integration%'
+        OR query_text ILIKE '%alter integration%'
+        OR query_text ILIKE '%create share%'
+        OR query_text ILIKE '%create account%'
+        OR query_text ILIKE '%monitor usage%'
+        OR query_text ILIKE '%ownership%'
+        OR query_text ILIKE '%drop table%'
+        OR query_text ILIKE '%drop database%'
+        OR query_text ILIKE '%create stage%'
+        OR query_text ILIKE '%drop stage%'
+        OR query_text ILIKE '%alter stage%'
+        OR query_text ILIKE '%create user%'
+        OR query_text ILIKE '%alter user%'
+        OR query_text ILIKE '%drop user%'
+        OR query_text ILIKE '%create_network_policy%'
+        OR query_text ILIKE '%alter_network_policy%'
+        OR query_text ILIKE '%drop_network_policy%'
+        OR query_text ILIKE '%copy%'
+        )
+ORDER BY end_time desc
+);
+RETURN TABLE(res);
+END
+$$
+```
+
+### Users with static credentials
+
+Recommendation to remove any static credentials (passwords) stored in Snowflake
+ to mitigate the risk of credential stuffing/ password spray attacks.
+
+```sql
+CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_static_creds ()
+RETURNS TABLE()
+LANGUAGE SQL
+AS
+$$
+DECLARE
+res RESULTSET;
+BEGIN
+res :=(select name, has_password, password_last_set_time, disabled, ext_authn_duo
+from snowflake.account_usage.users
+where has_password = 'true'
+and disabled = 'false'
+and ext_authn_duo = 'false'
 );
 RETURN TABLE(res);
 END
@@ -873,379 +1155,6 @@ BEGIN
 res :=(select name, datediff("day", nvl(last_success_login, created_on), current_timestamp()) || ' days ago' Last_Login from SNOWFLAKE.ACCOUNT_USAGE.users
 where deleted_on is null
 order by datediff("day", nvl(last_success_login, created_on), current_timestamp()) desc
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### ACCOUNTADMIN grants
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_accountadmin_grants ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(select
-    user_name || ' granted the ' || role_name || ' role on ' || end_time as Description, query_text as Statement
-from
-    snowflake.account_usage.query_history
-where
-    execution_status = 'SUCCESS'
-    and query_type = 'GRANT'
-    and query_text ilike '%grant%accountadmin%to%'
-order by
-    end_time desc
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### ACCOUNTADMINS without MFA Enrollment
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_accountadmins_no_mfa ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(select u.name, has_password,
-timediff(days, last_success_login, current_timestamp()) || ' days ago' last_login ,
-timediff(days, password_last_set_time,current_timestamp(6)) || ' days ago' password_age
-from snowflake.account_usage.users u
-join snowflake.account_usage.grants_to_users g on grantee_name = name and role in ('ACCOUNTADMIN', 'SECURITYADMIN') and g.deleted_on is null
-where ext_authn_duo = false and u.deleted_on is null and has_password = true
-order by last_success_login desc
-
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### Anomalous Application Access
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_anomalous_application_access ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(SELECT
-    COUNT(*) AS client_app_count,
-    PARSE_JSON(client_environment) :APPLICATION :: STRING AS client_application,
-    PARSE_JSON(client_environment) :OS :: STRING AS client_os,
-    PARSE_JSON(client_environment) :OS_VERSION :: STRING AS client_os_version
-FROM
-    snowflake.account_usage.sessions sessions
-WHERE
-    1 = 1
-    AND sessions.created_on >= '2024-04-01'
-GROUP BY
-    ALL
-ORDER BY
-    1 ASC
-
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### Auth Factor by Method
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_auth_factor_by_method ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(select
-first_authentication_factor || ' ' ||nvl(second_authentication_factor, '') as authentication_method
-, count(*)
-from snowflake.account_usage.login_history
-where is_success = 'YES'
-group by authentication_method
-order by count(*) desc
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### Aggregate of client IPs leveraged at authentication for service discovery
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_factor_breakdown ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(select client_ip, user_name, reported_client_type, first_authentication_factor, count(*)
-from snowflake.account_usage.login_history
-group by client_ip, user_name, reported_client_type, first_authentication_factor
-order by count(*) desc
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### Monitored IPs logins
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_ip_logins ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(--
-SELECT
-    *
-FROM
-    snowflake.account_usage.login_history
-WHERE
-    client_ip IN (
-'102.165.16.161',
-'104.129.24.124',
-'104.223.91.28',
-'146.70.117.210',
-'146.70.117.56',
-'146.70.124.216',
-'146.70.165.227',
-'146.70.166.176',
-'146.70.171.112',
-'146.70.171.99',
-'154.47.30.137',
-'154.47.30.150',
-'169.150.201.25',
-'169.150.203.22',
-'173.44.63.112',
-'176.123.6.193',
-'184.147.100.29',
-'185.156.46.163',
-'185.213.155.241',
-'185.248.85.14',
-'185.248.85.59',
-'192.252.212.60',
-'193.32.126.233',
-'194.230.144.126',
-'198.44.129.82',
-'198.44.136.56',
-'198.44.136.82',
-'198.54.130.153',
-'198.54.131.152',
-'198.54.135.67',
-'198.54.135.99',
-'204.152.216.105',
-'206.217.205.49',
-'37.19.210.21',
-'37.19.210.34',
-'45.134.142.200',
-'45.86.221.146',
-'66.115.189.247',
-'66.63.167.147',
-'87.249.134.11',
-'93.115.0.49',
-'96.44.191.140'
-    )
-ORDER BY
-event_timestamp
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### Authentication patterns ordered by timestamp
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_ips_with_factor ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(-- NOTE: IP list is sorted
-select event_timestamp, event_type, user_name, client_ip, reported_client_type, first_authentication_factor, second_authentication_factor, is_success
-from snowflake.account_usage.login_history
-where first_authentication_factor='PASSWORD'
-and client_ip in (
-    '104.129.24.124',
-    '104.223.91.28',
-    '104.223.91.28',
-    '146.70.117.210',
-    '146.70.117.210',
-    '146.70.117.210',
-    '146.70.117.210',
-    '146.70.117.56',
-    '146.70.124.216',
-    '146.70.165.227',
-    '146.70.166.176',
-    '146.70.171.112',
-    '146.70.171.99',
-    '154.47.30.137',
-    '154.47.30.150',
-    '169.150.201.25',
-    '169.150.203.22',
-    '169.150.203.22',
-    '173.44.63.112',
-    '176.123.6.193',
-    '184.147.100.29',
-    '185.156.46.163',
-    '185.213.155.241',
-    '192.252.212.60',
-    '193.32.126.233',
-    '193.32.126.233',
-    '194.230.144.126',
-    '198.44.129.82',
-    '198.44.136.56',
-    '198.44.136.82',
-    '198.54.130.153',
-    '198.54.130.153',
-    '198.54.130.153',
-    '198.54.135.67',
-    '198.54.135.99',
-    '198.54.135.99',
-    '204.152.216.105',
-    '206.217.205.49',
-    '206.217.206.108',
-    '37.19.210.21',
-    '37.19.210.34',
-    '45.134.142.200',
-    '45.134.142.200',
-    '45.134.142.200',
-    '45.86.221.146',
-    '45.86.221.146',
-    '45.86.221.146',
-    '66.115.189.247',
-    '66.115.189.247',
-    '66.63.167.147',
-    '87.249.134.11',
-    '93.115.0.49',
-    '93.21.79.57',
-    '93.21.79.57',
-    '96.44.191.140'
-)
-and reported_client_type='JDBC'
-order by event_timestamp desc
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### Network Policy Change Management
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_network_policy_change_management ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(select user_name || ' made the following Network Policy change on ' || end_time || ' [' ||  query_text || ']' as Events
-   from snowflake.account_usage.query_history where execution_status = 'SUCCESS'
-   and query_type in ('CREATE_NETWORK_POLICY', 'ALTER_NETWORK_POLICY', 'DROP_NETWORK_POLICY')
-   or (query_text ilike '%set network_policy%' or
-       query_text ilike '%unset network_policy%')
-       and query_type != 'SELECT' and query_type != 'UNKNOWN'
-   order by end_time desc
-
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### Monitored query history
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_query_history ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(SELECT
-  query_text,
-  user_name,
-  role_name,
-  end_time
-FROM snowflake.account_usage.query_history
-  WHERE execution_status = 'SUCCESS'
-    AND query_type NOT in ('SELECT')
-    --AND user_name= '<USER>'
-    AND (query_text ILIKE '%create role%'
-        OR query_text ILIKE '%manage grants%'
-        OR query_text ILIKE '%create integration%'
-        OR query_text ILIKE '%alter integration%'
-        OR query_text ILIKE '%create share%'
-        OR query_text ILIKE '%create account%'
-        OR query_text ILIKE '%monitor usage%'
-        OR query_text ILIKE '%ownership%'
-        OR query_text ILIKE '%drop table%'
-        OR query_text ILIKE '%drop database%'
-        OR query_text ILIKE '%create stage%'
-        OR query_text ILIKE '%drop stage%'
-        OR query_text ILIKE '%alter stage%'
-        OR query_text ILIKE '%create user%'
-        OR query_text ILIKE '%alter user%'
-        OR query_text ILIKE '%drop user%'
-        OR query_text ILIKE '%create_network_policy%'
-        OR query_text ILIKE '%alter_network_policy%'
-        OR query_text ILIKE '%drop_network_policy%'
-        OR query_text ILIKE '%copy%'
-        )
-ORDER BY end_time desc
-);
-RETURN TABLE(res);
-END
-$$
-```
-
-### Users with static credentials
-
-```sql
-CREATE OR REPLACE PROCEDURE SENTRY_temp_static_creds ()
-RETURNS TABLE()
-LANGUAGE SQL
-AS
-$$
-DECLARE
-res RESULTSET;
-BEGIN
-res :=(select name, has_password, password_last_set_time, disabled, ext_authn_duo
-from snowflake.account_usage.users
-where has_password = 'true'
-and disabled = 'false'
-and ext_authn_duo = 'false'
 );
 RETURN TABLE(res);
 END

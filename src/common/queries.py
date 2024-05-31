@@ -58,16 +58,16 @@ SHARING_ACCESS_COUNT_BY_COLUMN = Query("sharing_access_count_by_column")
 
 SHARING_TABLE_JOINS_BY_CONSUMER = Query("sharing_table_joins_by_consumer")
 
-# Temporary tiles; to be revised later
+# May 30 ttps guidance
 
-TEMP_IP_LOGINS = Query("temp_ip_logins")
+IP_LOGINS = Query("may30_ttps_guidance_ip_logins")
 
-TEMP_FACTOR_BREAKDOWN = Query("temp_factor_breakdown")
+FACTOR_BREAKDOWN = Query("may30_ttps_guidance_factor_breakdown")
 
-TEMP_IPS_WITH_FACTOR = Query("temp_ips_with_factor")
+IPS_WITH_FACTOR = Query("may30_ttps_guidance_ips_with_factor")
 
-TEMP_STATIC_CREDS = Query("temp_static_creds")
+STATIC_CREDS = Query("may30_ttps_guidance_static_creds")
 
-TEMP_QUERY_HISTORY = Query("temp_query_history")
+QUERY_HISTORY = Query("may30_ttps_guidance_query_history")
 
-TEMP_ANOMALOUS_APPLICATION_ACCESS = Query("temp_anomalous_application_access")
+ANOMALOUS_APPLICATION_ACCESS = Query("may30_ttps_guidance_anomalous_application_access")

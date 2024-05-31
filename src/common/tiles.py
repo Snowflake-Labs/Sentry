@@ -166,15 +166,15 @@ SharingTiles = _mk_tiles(
     queries.SHARING_TABLE_JOINS_BY_CONSUMER,
 )
 
-TempTiles = _mk_tiles(
-    queries.TEMP_IP_LOGINS,
-    queries.TEMP_FACTOR_BREAKDOWN,
-    queries.TEMP_IPS_WITH_FACTOR,
-    queries.TEMP_STATIC_CREDS,
-    queries.TEMP_QUERY_HISTORY,
+May30TTPsGuidanceTiles = _mk_tiles(
+    queries.IP_LOGINS,
+    queries.FACTOR_BREAKDOWN,
+    queries.IPS_WITH_FACTOR,
+    queries.STATIC_CREDS,
+    queries.QUERY_HISTORY,
     queries.AUTH_BY_METHOD,
     queries.ACCOUNTADMIN_GRANTS,
     queries.ACCOUNTADMIN_NO_MFA,
     queries.NETWORK_POLICY_CHANGES,
-    queries.TEMP_ANOMALOUS_APPLICATION_ACCESS,
+    queries.ANOMALOUS_APPLICATION_ACCESS,
 )

@@ -172,7 +172,7 @@ TempTiles = _mk_tiles(
     queries.TEMP_IPS_WITH_FACTOR,
     queries.TEMP_STATIC_CREDS,
     queries.TEMP_QUERY_HISTORY,
-    queries.TEMP_AUTH_FACTOR_BY_METHOD,
+    queries.AUTH_BY_METHOD,
     queries.ACCOUNTADMIN_GRANTS,
     queries.TEMP_ACCOUNTADMINS_NO_MFA,
     queries.TEMP_NETWORK_POLICY_CHANGE_MANAGEMENT,

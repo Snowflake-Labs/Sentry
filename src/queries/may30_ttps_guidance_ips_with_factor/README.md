@@ -1,7 +1,7 @@
 ---
 title: Authentication patterns ordered by timestamp
-Tile Identifier: TEMP-3
-Dashboard: TEMP
+Tile Identifier: MAY30_TTPS_GUIDANCE-3
+Dashboard: MAY30_TTPS_GUIDANCE
 Security Features Checklist:
 NIST 800-53:
 NIST 800-171:

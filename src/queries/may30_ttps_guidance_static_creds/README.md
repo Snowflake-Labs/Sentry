@@ -1,7 +1,7 @@
 ---
 title: Users with static credentials
-Tile Identifier: TEMP-4
-Dashboard: TEMP
+Tile Identifier: MAY30_TTPS_GUIDANCE-4
+Dashboard: MAY30_TTPS_GUIDANCE
 Security Features Checklist:
 NIST 800-53:
 NIST 800-171:

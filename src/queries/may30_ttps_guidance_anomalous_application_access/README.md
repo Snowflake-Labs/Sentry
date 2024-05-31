@@ -1,7 +1,7 @@
 ---
 title: Anomalous Application Access
-Tile Identifier: TEMP-10
-Dashboard: TEMP
+Tile Identifier: MAY30_TTPS_GUIDANCE-10
+Dashboard: MAY30_TTPS_GUIDANCE
 Security Features Checklist:
 NIST 800-53:
 NIST 800-171:

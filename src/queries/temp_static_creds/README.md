@@ -7,6 +7,7 @@ NIST 800-53:
 NIST 800-171:
 HITRUST CSF v9:
 MITRE ATT&CK (SaaS):
+blurb: "Recommendation to remove any static credentials (passwords) stored in Snowflake to mitigate the risk of credential stuffing/ password spray attacks."
 ---
 Recommendation to remove any static credentials (passwords) stored in Snowflake
 to mitigate the risk of credential stuffing/ password spray attacks.

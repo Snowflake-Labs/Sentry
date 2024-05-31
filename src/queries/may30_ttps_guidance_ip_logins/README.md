@@ -1,7 +1,7 @@
 ---
 title: Monitored IPs logins
-Tile Identifier: TEMP-1
-Dashboard: TEMP
+Tile Identifier: MAY30_TTPS_GUIDANCE-1
+Dashboard: MAY30_TTPS_GUIDANCE
 Security Features Checklist:
 NIST 800-53:
 NIST 800-171:

@@ -1,7 +1,7 @@
 ---
 title: Aggregate of client IPs leveraged at authentication for service discovery
-Tile Identifier: TEMP-2
-Dashboard: TEMP
+Tile Identifier: MAY30_TTPS_GUIDANCE-2
+Dashboard: MAY30_TTPS_GUIDANCE
 Security Features Checklist:
 NIST 800-53:
 NIST 800-171:

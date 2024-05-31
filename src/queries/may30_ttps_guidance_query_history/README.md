@@ -1,7 +1,7 @@
 ---
 title: Monitored query history
-Tile Identifier: TEMP-5
-Dashboard: TEMP
+Tile Identifier: MAY30_TTPS_GUIDANCE-5
+Dashboard: MAY30_TTPS_GUIDANCE
 Security Features Checklist:
 NIST 800-53:
 NIST 800-171:

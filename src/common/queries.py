@@ -76,6 +76,4 @@ TEMP_ACCOUNTADMIN_GRANTS = Query("temp_accountadmin_grants")
 
 TEMP_ACCOUNTADMINS_NO_MFA = Query("temp_accountadmins_no_mfa")
 
-TEMP_NETWORK_POLICY_CHANGE_MANAGEMENT = Query("temp_network_policy_change_management")
-
 TEMP_ANOMALOUS_APPLICATION_ACCESS = Query("temp_anomalous_application_access")

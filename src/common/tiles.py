@@ -174,7 +174,7 @@ TempTiles = _mk_tiles(
     queries.TEMP_QUERY_HISTORY,
     queries.AUTH_BY_METHOD,
     queries.ACCOUNTADMIN_GRANTS,
-    queries.TEMP_ACCOUNTADMINS_NO_MFA,
+    queries.ACCOUNTADMIN_NO_MFA,
     queries.TEMP_NETWORK_POLICY_CHANGE_MANAGEMENT,
     queries.TEMP_ANOMALOUS_APPLICATION_ACCESS,
 )

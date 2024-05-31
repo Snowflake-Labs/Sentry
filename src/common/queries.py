@@ -1,6 +1,6 @@
 """Module with queries to be run in the app."""
 
-from src.common.query_proxy import Query
+from common.query_proxy import Query
 
 NUM_FAILURES = Query("num_failures")
 

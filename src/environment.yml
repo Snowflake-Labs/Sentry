@@ -3,3 +3,4 @@ channels:
   - snowflake
 dependencies:
   - pandas
+  - pydantic

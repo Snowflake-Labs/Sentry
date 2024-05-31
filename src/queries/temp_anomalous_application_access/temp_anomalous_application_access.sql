@@ -11,5 +11,5 @@ WHERE
 GROUP BY
     ALL
 ORDER BY
-    1 ASC;
+    1 DESC;
 

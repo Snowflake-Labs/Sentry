@@ -55,7 +55,22 @@ To use this:
 ## Streamlit in local docker container
 
 1. Clone this repository and change current directory to its root
-2. Build and run the docker image:
+2. Create a directory `.streamlit` in the root of the cloned repository
+3. Create a file `secrets.toml` inside `.streamlit` directory with contents
+   like:
+
+   ```toml
+   [connections.default]
+   account = "<accountName>"
+   user = "<userName>"
+   password = "<superSecretPassword>"
+   warehouse = "<whName>"
+   role = "<role>" # Any role with access to ACCOUNT_USAGE
+   ```
+
+    See more information on the Stremalit secrets [here][3].
+
+4. Build and run the docker image:
 
     ```shell
     $ docker build . -t sentry:latest -f deployment_models/local-docker/Dockerfile
@@ -68,13 +83,13 @@ To use this:
     ```
 
     Replace `$(pwd)/.streamlit` with a path to the directory containing
-    [Streamlit secrets toml file][3].
+    [Streamlit secrets toml file][3] if using a different secrets location.
 
     `--publish-all` will assign a random port to the container; you can use
     `docker ps` to determine which port is forwarded to `8501` inside the
     container.
 
-3. (if needed) find out the port that Docker assigned to the container using
+5. (if needed) find out the port that Docker assigned to the container using
    `docker ps`:
 
    ```shell
@@ -82,7 +97,7 @@ To use this:
      sentry:latest	0.0.0.0:55000->8501/tcp
    ```
 
-4. Open `http://localhost:55000`
+6. Open `http://localhost:55000`
 
 ## Stored procedure deployment
 

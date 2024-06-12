@@ -113,24 +113,24 @@
                     cp -rf src "$TARGET"
                     pushd "$TARGET"/
 
-                        # Create deploy-only config for the query warehouse
-                        cat >snowflake.local.yml <<EOF
-                        definition_version: 1
-                        streamlit:
-                        query_warehouse: $SIS_QUERY_WAREHOUSE
-                        EOF
+                    # Create deploy-only config for the query warehouse
+                    cat >snowflake.local.yml <<EOF
+                    definition_version: 1
+                    streamlit:
+                      query_warehouse: $SIS_QUERY_WAREHOUSE
+                    EOF
 
-                        # Deploy the application
-                        # NOTE: the CI variable check prevents the account name from being printed by suppressing all output
-                        if [ -n "''${CI+x}" ]; then
+                    # Deploy the application
+                    # NOTE: the CI variable check prevents the account name from being printed by suppressing all output
+                    if [ -n "''${CI+x}" ]; then
                         exec &>/dev/null
-                        fi
-                        snow streamlit deploy --replace
+                    fi
+                    snow streamlit deploy --replace
 
-                        # Grant the usage on the created Streamlit to the designated admin role
-                        cat <<EOF | snow sql -i
-                        GRANT USAGE ON STREAMLIT $SNOWFLAKE_DATABASE.$SNOWFLAKE_SCHEMA.SENTRY TO ROLE $SIS_GRANT_TO_ROLE;
-                        EOF
+                    # Grant the usage on the created Streamlit to the designated admin role
+                    cat <<EOF | snow sql -i
+                    GRANT USAGE ON STREAMLIT $SNOWFLAKE_DATABASE.$SNOWFLAKE_SCHEMA.SENTRY TO ROLE $SIS_GRANT_TO_ROLE;
+                    EOF
                   '';
                 };
                 tear-down-and-deploy-native-app-in-own-account.program = pkgs.writeShellApplication {

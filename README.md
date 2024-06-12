@@ -1,6 +1,8 @@
 This is a repository containing the Streamlit version of the [Snowflake
 security dashboards][1].
 
+![Main page screenshot](./docs/assets/main_page.png)
+
 # About
 
 This project is first and foremost a set of tools aimed to help with step #2 of

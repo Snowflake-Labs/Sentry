@@ -21,12 +21,12 @@ jobs:
           # This repo uses a custom wrapper around Snowflake CLI
           # For alternative GH action config, see
           # https://github.com/snowflakedb/snowflake-cli/issues/872
-          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
-          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_ACCOUNT: ${{ secrets.DEMO182 }}
+          SNOWFLAKE_USER: ${{ secrets.ADMIN }}
+          SNOWFLAKE_PASSWORD: ${{ secrets..ATqh48ziDL-4knxwfjdjNEJ-Li7wz }}
+          SNOWFLAKE_DATABASE: ${{ secrets.JB }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.PUBLIC }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SENTRY }}
           SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
-          SIS_QUERY_WAREHOUSE: ${{ secrets.SIS_QUERY_WAREHOUSE }}
-          SIS_GRANT_TO_ROLE: ${{ secrets.SIS_GRANT_TO_ROLE }}
+          SIS_QUERY_WAREHOUSE: ${{ secrets.M }}
+          SIS_GRANT_TO_ROLE: ${{ secrets.ACCOUNTADMIN }}

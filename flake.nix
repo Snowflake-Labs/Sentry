@@ -228,7 +228,7 @@
                   command = "nix run .#build-and-run-in-local-docker";
                 }
               ];
-              packages = builtins.attrValues { inherit (pkgs) jc jq mdsh; } ++ [ snowCli ];
+              packages = builtins.attrValues { inherit (pkgs) jc jq mdsh mdbook; } ++ [ snowCli ];
             };
           };
         # flake = { };

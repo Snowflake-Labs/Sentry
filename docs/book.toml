@@ -1,0 +1,12 @@
+[book]
+authors = ["Vladimir Timofeenko"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Sentry documentation"
+
+[output.html]
+git-repository-url = "https://github.com/Snowflake-Labs/Sentry"
+git-repository-icon = "fa-github"
+edit-url-template = "https://github.com/Snowflake-Labs/Sentry/edit/main/docs/src"
+

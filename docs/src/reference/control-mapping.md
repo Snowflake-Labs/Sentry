@@ -1,8 +1,8 @@
-<!-- TODO: Add intro? -->
-
-<!-- NOTE: This is generated through mdsh, do not edit by hand -->
+# Control Mapping
 
 <!-- markdownlint-disable MD013 -->
+<!-- NOTE: This is generated through mdsh, do not edit by hand -->
+
 <!-- `> nix run .#renderSentryControlMappingTable` -->
 <!-- BEGIN mdsh -->
 | tile_identifier        | title                                                                     | dashboard                   | security_features_checklist   | nist_800_53   | nist_800_171   | hitrust_csf_v9          | mitre_attack_saas                                                                                                                 |
@@ -40,4 +40,3 @@
 | MAY30_TTPS_GUIDANCE-5  | Monitored query history                                                   | MAY30_TTPS_GUIDANCE         |                               |               |                |                         |                                                                                                                                   |
 | MAY30_TTPS_GUIDANCE-10 | Anomalous Application Access                                              | MAY30_TTPS_GUIDANCE         |                               |               |                |                         |                                                                                                                                   |
 <!-- END mdsh -->
-<!-- markdownlint-enable MD013 -->

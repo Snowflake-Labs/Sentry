@@ -1,56 +1,9 @@
-This is a set of instructions to deploy queries from this project as a git
-repository.
-
-# Setup
-
-[Doc on CREATE GIT REPOSITORY][1].
-
-1. Set up API integration:
-
-    ```sql
-    CREATE OR REPLACE API INTEGRATION sentry_public_github
-        API_PROVIDER=git_https_api
-        API_ALLOWED_PREFIXES=('https://github.com/sfc-gh-vtimofeenko')
-        enabled = true;
-    ```
-
-2. Set up git repository in currently selected database:
-
-    ```sql
-    CREATE OR REPLACE GIT REPOSITORY sentry_repo
-        api_integration = sentry_public_github
-        origin = "https://github.com/sfc-gh-vtimofeenko/streamlit-security-dashboards";
-    ```
-
-# Update
-
-Run `ALTER GIT REPOSITORY sentry_repo FETCH;`
-
-# Usage
-
-## EXECUTE IMMEDIATE FROM
-
-To execute any query from [`src/queries`](../../src/queries) as SQL, run:
-
-```sql
-EXECUTE IMMEDIATE FROM @sentry_repo/branches/main/src/queries/auth_by_method/auth_by_method.sql;
-```
-
-## Stored procedures
-
-To install all stored procedures at once:
-
-```sql
-EXECUTE IMMEDIATE FROM @sentry_repo/branches/main/deployment_models/git-repository/create_all.sql;
-```
-
-The complete list:
-
+# Queries
 <!-- NOTE: This is generated through mdsh, do not edit by hand -->
 
-<!-- `> nix run .#mkSprocDocs | sed 's;^#;###;'` -->
+<!-- `> nix run .#mkSprocDocs | sed 's;^#;##;'` -->
 <!-- BEGIN mdsh -->
-### ACCOUNTADMIN Grants
+## ACCOUNTADMIN Grants
 
 All existing and especially new AA grants should be few, rare and
 well-justified.
@@ -80,7 +33,7 @@ END
 $$
 ```
 
-### ACCOUNTADMINs that do not use MFA
+## ACCOUNTADMINs that do not use MFA
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_accountadmin_no_mfa ()
@@ -104,7 +57,7 @@ END
 $$
 ```
 
-### Breakdown by Method
+## Breakdown by Method
 
 Recommendation: enforce modern authentication via SAML, Key Pair, OAUTH.
 
@@ -131,7 +84,7 @@ END
 $$
 ```
 
-### Key Pair Bypass (Password)
+## Key Pair Bypass (Password)
 
 **Note:** this query would need to be adjusted to reflect the service user
 naming convention.
@@ -162,7 +115,7 @@ END
 $$
 ```
 
-### Average Number of Role Grants per User (~5-10)
+## Average Number of Role Grants per User (~5-10)
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_avg_number_of_role_grants_per_user ()
@@ -182,7 +135,7 @@ END
 $$
 ```
 
-### Bloated roles
+## Bloated roles
 
 Roles with largest amount of effective privileges
 
@@ -284,7 +237,7 @@ END
 $$
 ```
 
-### Default Role is ACCOUNTADMIN
+## Default Role is ACCOUNTADMIN
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_default_role_check ()
@@ -308,7 +261,7 @@ END
 $$
 ```
 
-### Grants to PUBLIC role
+## Grants to PUBLIC role
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_grants_to_public ()
@@ -330,7 +283,7 @@ END
 $$
 ```
 
-### Grants to unmanaged schemas outside schema owner
+## Grants to unmanaged schemas outside schema owner
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_grants_to_unmanaged_schemas_outside_schema_owner ()
@@ -369,7 +322,7 @@ END
 $$
 ```
 
-### Least Used Role Grants
+## Least Used Role Grants
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_least_used_role_grants ()
@@ -395,7 +348,7 @@ END
 $$
 ```
 
-### Anomalous Application Access
+## Anomalous Application Access
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_anomalous_application_access ()
@@ -427,7 +380,7 @@ END
 $$
 ```
 
-### Aggregate of client IPs leveraged at authentication for service discovery
+## Aggregate of client IPs leveraged at authentication for service discovery
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_factor_breakdown ()
@@ -448,7 +401,7 @@ END
 $$
 ```
 
-### Monitored IPs logins
+## Monitored IPs logins
 
 Current IOC's are tied to the listed IP's, often leveraging a JDBC driver, and
 authenticating via a Password stored locally in Snowflake.
@@ -775,7 +728,7 @@ END
 $$
 ```
 
-### Authentication patterns ordered by timestamp
+## Authentication patterns ordered by timestamp
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_ips_with_factor ()
@@ -1095,7 +1048,7 @@ END
 $$
 ```
 
-### Monitored query history
+## Monitored query history
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_may30_ttps_guidance_query_history ()
@@ -1143,7 +1096,7 @@ END
 $$
 ```
 
-### Users with static credentials
+## Users with static credentials
 
 Recommendation to remove any static credentials (passwords) stored in Snowflake
  to mitigate the risk of credential stuffing/ password spray attacks.
@@ -1168,7 +1121,7 @@ END
 $$
 ```
 
-### Most Dangerous User
+## Most Dangerous User
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_most_dangerous_person ()
@@ -1279,7 +1232,7 @@ END
 $$
 ```
 
-### Network Policy Change Management
+## Network Policy Change Management
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_network_policy_changes ()
@@ -1303,7 +1256,7 @@ END
 $$
 ```
 
-### Login failures, by User and Reason
+## Login failures, by User and Reason
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_num_failures ()
@@ -1333,7 +1286,7 @@ END
 $$
 ```
 
-### Privileged Object Management
+## Privileged Object Management
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_privileged_object_changes_by_user ()
@@ -1372,7 +1325,7 @@ END
 $$
 ```
 
-### SCIM Token Lifecycle
+## SCIM Token Lifecycle
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_scim_token_lifecycle ()
@@ -1406,7 +1359,7 @@ END
 $$
 ```
 
-### Access Count By Column
+## Access Count By Column
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_sharing_access_count_by_column ()
@@ -1438,7 +1391,7 @@ END
 $$
 ```
 
-### Aggregate View of Access Over Time by Consumer
+## Aggregate View of Access Over Time by Consumer
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_sharing_access_over_time_by_consumer ()
@@ -1469,7 +1422,7 @@ END
 $$
 ```
 
-### Shares usage statistics
+## Shares usage statistics
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_sharing_listing_usage ()
@@ -1494,7 +1447,7 @@ END
 $$
 ```
 
-### Changes to listings
+## Changes to listings
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_sharing_listings_alter ()
@@ -1520,7 +1473,7 @@ END
 $$
 ```
 
-### Reader account creation
+## Reader account creation
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_sharing_reader_creation_monitor ()
@@ -1546,7 +1499,7 @@ END
 $$
 ```
 
-### Replication usage
+## Replication usage
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_sharing_replication_history ()
@@ -1570,7 +1523,7 @@ END
 $$
 ```
 
-### Changes to shares
+## Changes to shares
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_sharing_share_alter ()
@@ -1596,7 +1549,7 @@ END
 $$
 ```
 
-### Table Joins By Consumer
+## Table Joins By Consumer
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_sharing_table_joins_by_consumer ()
@@ -1637,7 +1590,7 @@ END
 $$
 ```
 
-### Stale users
+## Stale users
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_stale_users ()
@@ -1657,7 +1610,7 @@ END
 $$
 ```
 
-### User to Role Ratio (larger is better)
+## User to Role Ratio (larger is better)
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_user_role_ratio ()
@@ -1677,7 +1630,7 @@ END
 $$
 ```
 
-### Users by Password Age
+## Users by Password Age
 
 ```sql
 CREATE OR REPLACE PROCEDURE SENTRY_users_by_oldest_passwords ()
@@ -1699,5 +1652,3 @@ $$
 ```
 
 <!-- END mdsh -->
-
-[1]: https://docs.snowflake.com/en/sql-reference/sql/create-git-repository

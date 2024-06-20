@@ -9,4 +9,11 @@ title = "Sentry documentation"
 git-repository-url = "https://github.com/Snowflake-Labs/Sentry"
 git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/Snowflake-Labs/Sentry/edit/main/docs/src"
+additional-css = ["custom.css"]
+
+[preprocessor.mkSprocDocs]
+command = "mdsh --inputs ./src/reference/queries.md"
+
+[preprocessor.renderControlMapping]
+command = "mdsh --inputs ./src/reference/control-mapping.md"
 

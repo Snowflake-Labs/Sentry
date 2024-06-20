@@ -26,10 +26,9 @@
 
 # Reference Guide
 
+- [Queries](./reference/queries.md)
 <!-- TODO: merge here -->
-- [Queries]()
-<!-- TODO: merge here -->
-- [Control Mapping]()
+- [Control Mapping](./reference/control-mapping.md)
 
 # Development
 

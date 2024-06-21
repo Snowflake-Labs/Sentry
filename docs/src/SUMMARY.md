@@ -11,7 +11,6 @@
   - [Local Streamlit application](./guide/installation/local-streamlit.md)
   - [Docker container](./guide/installation/docker.md)
   - [Native application](./guide/installation/native-app.md)
-  <!-- TODO: write -->
   - [Snowpark Container Services]()
   - [Stored procedures](./guide/installation/snowgit.md)
 - [Usage](./guide/usage/README.md)
@@ -20,7 +19,6 @@
   - [Local Streamlit application](./guide/update/local-streamlit.md)
   - [Docker container](./guide/update/docker.md)
   - [Native application](./guide/update/native-app.md)
-  <!-- TODO: write -->
   - [Snowpark Container Services]()
   - [Stored procedures](./guide/update/snowgit.md)
 

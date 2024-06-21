@@ -31,5 +31,4 @@
 # Development
 
 - [Architecture](./development/architecture.md)
-- [Documentation](./development/docs.md)
 - [Contributing](./development/CONTRIBUTING.md)

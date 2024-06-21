@@ -46,22 +46,18 @@ to the same effect.
 
 # Generating documentation
 
-## Git-repository documentation
+Project uses a combination of [mdbook][mdbook], [mdsh][mdsh] and python scripts
+to generate and publish the documentation.
 
-1. Use [`mdsh`][1] to update `README.md` in `git-repository` directory:
+Building is wrapped in a Nix application "mkMdBook" and deployment to GitHub
+pages is done by an action.
 
-    ```bash
-    cd $PRJ_ROOT
-    mdsh --inputs ./deployment_models/git-repository/README.md
-    ```
+To preview the documentation locally:
 
-    It will invoke nix-based application that generates documentation in the
-    defined block.
+1. `cd docs/`
+2. `mdbook serve`
 
-2. Use `nix` to generate the single file with all stored procedures:
+All needed utilities are a part of the development shell.
 
-    ```bash
-    nix run .#mkSingleCreateSprocFile > ./deployment_models/git-repository/create_all.sql
-    ```
-
-[1]: https://github.com/zimbatm/mdsh
+[mdbook]: https://rust-lang.github.io/mdBook/
+[mdsh]: https://github.com/zimbatm/mdsh

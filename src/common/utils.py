@@ -1,4 +1,5 @@
 """Bag of utility functions."""
+
 import streamlit as st
 from snowflake.snowpark import Session
 from snowflake.snowpark.context import get_active_session

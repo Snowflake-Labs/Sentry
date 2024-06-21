@@ -3,6 +3,7 @@
 Tiles are self-contained objects that combine the query to fetch the data with the method of rendering a tile on the
 page.
 """
+
 from functools import partial
 from typing import Any, Callable, Generator, NamedTuple
 

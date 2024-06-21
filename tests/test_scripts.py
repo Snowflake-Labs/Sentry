@@ -1,4 +1,5 @@
 """Tests for various project scripts."""
+
 from functools import cmp_to_key
 from random import shuffle
 

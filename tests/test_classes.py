@@ -1,4 +1,5 @@
 """Tests the Query class."""
+
 from operator import attrgetter
 from textwrap import dedent
 

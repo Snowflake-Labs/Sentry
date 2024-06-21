@@ -1,4 +1,5 @@
 """Base pytest fixtures and settings."""
+
 from pathlib import Path
 
 import pytest

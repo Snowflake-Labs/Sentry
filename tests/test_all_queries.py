@@ -1,4 +1,5 @@
 """Iterates over all query directories and tries importing them."""
+
 from pathlib import Path
 
 import pytest

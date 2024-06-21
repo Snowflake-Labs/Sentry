@@ -3,14 +3,13 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs.follows = "nixpkgs-stable";
     snowcli = {
       url = "github:sfc-gh-vtimofeenko/snowcli-nix-flake";
 
       inputs = {
         nixpkgs-unstable.follows = "nixpkgs-unstable";
-        nixpkgs-stable.follows = "nixpkgs-stable";
         nixpkgs.follows = "nixpkgs-unstable";
         # development
         devshell.follows = "devshell";
@@ -88,9 +87,9 @@
                   { inherit (imp) mkSprocDocs mkSingleCreateSprocFile; };
                 doc-apps =
                   let
-                    imp = import ./docs/apps.nix { inherit (pkgs) writeShellApplication; };
+                    imp = import ./docs/apps.nix { inherit (pkgs) writeShellApplication mdbook mdsh; };
                   in
-                  { inherit (imp) renderSentryControlMappingTable; };
+                  { inherit (imp) renderSentryControlMappingTable mkMdBook; };
               in
               {
                 deploy-streamlit-in-snowflake.program = pkgs.writeShellApplication {

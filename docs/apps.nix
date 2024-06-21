@@ -3,7 +3,7 @@
 
   Since the script relies on python classes to handle Queries, it uses poetry.
 */
-{ writeShellApplication }:
+{ writeShellApplication, mdbook, mdsh }:
 let
   /** Produces program for an app that is a wrapper around a small script in python. */
   wrapPythonScript = { name, pythonScript }:
@@ -55,6 +55,37 @@ in
   renderSentryControlMappingTable = wrapPythonScript {
     name = "renderSentryControlMappingTable";
     pythonScript = "from scripts import render_queries_as_a_table; render_queries_as_a_table()";
+  };
+
+  mkMdBook = {
+    type = "app";
+    program = writeShellApplication {
+      name = "mkMdBook";
+      runtimeInputs = [ mdbook mdsh ];
+      text = ''
+        # silence pushd and popd
+        pushd () {
+          command pushd "$@" > /dev/null
+        }
+
+        popd () {
+          # Note that this wrapper removes "$@" as it's not used in the script
+          command popd > /dev/null
+        }
+
+        function exit_trap(){
+          popd
+          popd
+        }
+        trap exit_trap EXIT # go back to original dir regardless of the exit codes
+
+        pushd "''${PRJ_ROOT:-$(git rev-parse --show-toplevel)}"
+
+        pushd docs
+
+        mdbook build
+      '';
+    };
   };
 }
 

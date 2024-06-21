@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy docs to GH pages
 on:
   push:
     branches:

@@ -66,6 +66,7 @@ class Query:
     _query_text: str = None
     _description: str = None
     metadata: QueryMetadata = None
+    db_name: str = "SNOWFLAKE"
 
     # NOTE: before 3.9 it cannot be a builtin tuple(), need typing.Tuple
     _sproc_return_types: Tuple[str, str] = dataclasses.field(default_factory=tuple)
@@ -78,7 +79,9 @@ class Query:
     @property
     def query_text(self) -> str:
         """Query's SQL code."""
-        return self._query_text
+        return self._query_text.replace(
+            "SNOWFLAKE", self.db_name
+        )  # Naive implementation
 
     @property
     def description(self) -> str:
@@ -144,3 +147,7 @@ class Query:
             return object.__getattribute__(self, item)
         except AttributeError:
             return object.__getattribute__(self.metadata, item)
+
+    def change_db(self, target_db: str) -> None:
+        """Change the database against which query is run."""
+        self.db_name = target_db

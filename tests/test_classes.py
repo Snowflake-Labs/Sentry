@@ -16,6 +16,14 @@ def test_query_text():
     assert isinstance(STUB_QUERY.query_text, str)
 
 
+def test_changed_db():
+    """Checks that change of database is passed to the query text."""
+    new_db_name = "SNOWFLAKE_EXTRACT"
+    STUB_QUERY.change_db(new_db_name)
+
+    assert new_db_name in STUB_QUERY.query_text
+
+
 def test_description():
     """Checks that the query description is a string."""
     assert isinstance(STUB_QUERY.description, str)

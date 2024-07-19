@@ -70,7 +70,6 @@ class Tile(NamedTuple):
 
 def render(tile: Tile, query_db=st.session_state.get("QUERY_DB", "SNOWFLAKE")) -> Any:
     """Call Tile.render in a functional way."""
-    tile.query.change_db(query_db)
     return tile.render()
 
 

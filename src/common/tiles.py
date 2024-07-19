@@ -5,7 +5,7 @@ page.
 """
 
 from functools import partial
-from typing import Any, Callable, Generator, NamedTuple
+from typing import Any, Callable, List, NamedTuple
 
 import altair as alt
 import streamlit as st
@@ -68,15 +68,15 @@ class Tile(NamedTuple):
             st.code(self.query.query_text)
 
 
-def render(tile: Tile, query_db = st.session_state.get("QUERY_DB", "SNOWFLAKE")) -> Any:
+def render(tile: Tile, query_db=st.session_state.get("QUERY_DB", "SNOWFLAKE")) -> Any:
     """Call Tile.render in a functional way."""
     tile.query.change_db(query_db)
     return tile.render()
 
 
-def _mk_tiles(*tiles) -> Generator[Tile, Any, None]:
+def _mk_tiles(*tiles) -> List[Tile]:
     """Generate Tile instances by unpacking the provided iterable."""
-    return (Tile(**i) if isinstance(i, dict) else Tile(query=i) for i in tiles)
+    return list(Tile(**i) if isinstance(i, dict) else Tile(query=i) for i in tiles)
 
 
 altair_chart = partial(

@@ -30,7 +30,7 @@ def sidebar_footer() -> None:
             label="Database",
             help="If using an extract from SNOWFLAKE database – it "
             "can be specified here",
-            value="SNOWFLAKE",
+            value=st.session_state.get("QUERY_DATABASE", "SNOWFLAKE"),
             # TODO
             # autocomplete: get a list of databases in account
         )

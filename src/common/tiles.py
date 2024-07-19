@@ -5,7 +5,7 @@ page.
 """
 
 from functools import partial
-from typing import Any, Callable, Generator, NamedTuple
+from typing import Any, Callable, List, NamedTuple
 
 import altair as alt
 import streamlit as st
@@ -69,9 +69,9 @@ def render(tile: Tile) -> Any:
     return tile.render()
 
 
-def _mk_tiles(*tiles) -> Generator[Tile, Any, None]:
+def _mk_tiles(*tiles) -> List[Tile]:
     """Generate Tile instances by unpacking the provided iterable."""
-    return (Tile(**i) if isinstance(i, dict) else Tile(query=i) for i in tiles)
+    return list(Tile(**i) if isinstance(i, dict) else Tile(query=i) for i in tiles)
 
 
 altair_chart = partial(

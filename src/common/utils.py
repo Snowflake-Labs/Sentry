@@ -22,7 +22,31 @@ def maybe_connect() -> Session:
 
 def sidebar_footer() -> None:
     """Show a footer on sidebar with links to code and docs."""
-    with st.sidebar:
+
+    def settings():
+        st.subheader("Settings")
+
+        with st.form("Settings"):
+            query_database = st.text_input(label="Database",
+                                           help="If using an extract from SNOWFLAKE database – it "
+                                                "can be specified here",
+                                           value="SNOWFLAKE",
+                                           # TODO
+                                           # autocomplete: get a list of databases in account
+                                           )
+
+            submitted = st.form_submit_button("Submit")
+
+            if submitted:
+                print("Button clicked")
+                st.session_state["QUERY_DATABASE"] = query_database
+                st.experimental_rerun()
+
+    def info_section():
         st.subheader("About the app")
         st.markdown("[Documentation](https://snowflake-labs.github.io/Sentry/)")
         st.markdown("[Source code](https://github.com/Snowflake-Labs/Sentry)")
+
+    with st.sidebar:
+        settings()
+        info_section()

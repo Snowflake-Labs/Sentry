@@ -52,6 +52,10 @@ class Tile(NamedTuple):
         """Produce a Tile's representation on the page."""
         st.subheader(self.name or self.query.title)
         session = get_active_session()
+        print(f"Rendering {self.name or self.query.title}")
+
+        self.query.change_db(st.session_state.get("QUERY_DATABASE", "SNOWFLAKE"))
+
         with st.spinner("Fetching data..."):
             data = session.sql(self.query.query_text).to_pandas()
         self.render_f(data)
@@ -64,8 +68,9 @@ class Tile(NamedTuple):
             st.code(self.query.query_text)
 
 
-def render(tile: Tile) -> Any:
+def render(tile: Tile, query_db = st.session_state.get("QUERY_DB", "SNOWFLAKE")) -> Any:
     """Call Tile.render in a functional way."""
+    tile.query.change_db(query_db)
     return tile.render()
 
 

@@ -247,11 +247,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1722614143,
-        "narHash": "sha256-/W3Bf4nHHHSnMab/om2OPsJP00KV2ASfJfpoCO/h/7s=",
+        "lastModified": 1722631810,
+        "narHash": "sha256-ZEYEhEwlVciTHR7iu5v0ciI84AdA8NBTWd3n1YGEAuc=",
         "owner": "sfc-gh-vtimofeenko",
         "repo": "snowcli-nix-flake",
-        "rev": "daa88bd5e62a91f7153bd85218ed45f2fc5858c4",
+        "rev": "7ffbf1dddc7944f03e2fbea6a25215389e11f952",
         "type": "github"
       },
       "original": {

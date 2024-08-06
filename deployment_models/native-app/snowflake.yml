@@ -9,5 +9,5 @@ native_app:
   artifacts:
     - src: app/*
       dest: ./
-    - src: ../../src
+    - src: ./src
       dest: ./streamlit

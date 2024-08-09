@@ -1,11 +1,19 @@
-definition_version: 1
+definition_version: "1.1"
 streamlit:
+  # SiS location
+  database: <% ctx.env.SIS_APP_DATABASE %>
+  schema: <% ctx.env.SIS_APP_SCHEMA %>
+
+  # Warehouse to be used for query execution
+  # TODO: Drop this when issue #8 is implemented
+  query_warehouse: <% ctx.env.SIS_QUERY_WAREHOUSE %>
+
   name: Sentry
-  stage: my_streamlit_stage
-  query_warehouse: REPLACEME # NOTE: snowcli streamlit deploy validator needs _some_ query_warehouse specified
+  title: Sentry
   main_file: Authentication.py
   env_file: environment.yml
   pages_dir: pages/
+
   additional_source_files:
     - common/queries.py
     - common/tiles.py

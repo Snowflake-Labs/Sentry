@@ -78,7 +78,7 @@
             # * Devshell scripts that effectively run apps
             apps = pipe ./nix/apps [
               builtins.import
-              (x: x { inherit pkgs; }) # apply pkgs
+              (x: x { inherit pkgs self'; }) # apply pkgs
               # Turn nested attribute sets with packages into apps, prepending the category prefix
               (mapAttrs (
                 k: v: # This is the outer attrset, k = "sis", v = "import ./sis { inherit pkgs;}"

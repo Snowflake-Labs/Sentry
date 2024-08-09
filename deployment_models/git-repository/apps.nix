@@ -5,8 +5,11 @@
 */
 { writeShellApplication }:
 let
-  /** Produces program for an app that is a wrapper around a small script in python. */
-  wrapPythonScript = { name, pythonScript }:
+  /**
+    Produces program for an app that is a wrapper around a small script in python.
+  */
+  wrapPythonScript =
+    { name, pythonScript }:
     {
       type = "app";
       program = writeShellApplication {

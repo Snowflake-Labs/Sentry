@@ -23,7 +23,7 @@ _: {
       config = {
         treefmt = {
           programs = {
-            nixpkgs-fmt.enable = true;
+            nixfmt.enable = true;
             deadnix = {
               enable = true;
               no-lambda-arg = true;
@@ -40,6 +40,7 @@ _: {
               format = true;
             };
           };
+          projectRootFile = "flake.nix";
           # Vendored modules are explicitly excluded from formatter to stay as close to upstream as possible
           settings.global.excludes = [ "./src/vendored/*" ];
         };

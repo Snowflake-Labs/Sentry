@@ -55,11 +55,12 @@
           "x86_64-darwin"
         ];
         perSystem =
-          { config
-          , inputs'
-          , pkgs
-          , self'
-          , ...
+          {
+            config,
+            inputs',
+            pkgs,
+            self',
+            ...
           }:
           let
             inherit (pkgs.lib)
@@ -82,19 +83,19 @@
               # Turn nested attribute sets with packages into apps, prepending the category prefix
               (mapAttrs (
                 k: v: # This is the outer attrset, k = "sis", v = "import ./sis { inherit pkgs;}"
-                  pipe v [
-                    (mapAttrs (
-                      # This is the inner attrset, k' = setup, v' = {whatever code}
-                      k': v': {
-                        name = "${k}-${k'}";
-                        value = {
-                          type = "app";
-                          program = v';
-                        };
-                      }
-                    ))
-                    attrValues
-                  ]
+                pipe v [
+                  (mapAttrs (
+                    # This is the inner attrset, k' = setup, v' = {whatever code}
+                    k': v': {
+                      name = "${k}-${k'}";
+                      value = {
+                        type = "app";
+                        program = v';
+                      };
+                    }
+                  ))
+                  attrValues
+                ]
               ))
               # Turn everything into a top-level attrset
               attrValues
@@ -114,46 +115,19 @@
 
             inherit apps;
 
-            # Development configuration
-            treefmt = {
-              programs = {
-                nixpkgs-fmt.enable = true;
-                deadnix = {
-                  enable = true;
-                  no-lambda-arg = true;
-                  no-lambda-pattern-names = true;
-                  no-underscore = true;
-                };
-                statix.enable = true;
-                isort = {
-                  enable = true;
-                  profile = "black";
-                };
-                ruff = {
-                  enable = true;
-                  format = true;
-                };
-              };
-              projectRootFile = "flake.nix";
-              # Vendored modules are explicitly excluded from formatter to stay as close to upstream as possible
-              settings.global.excludes = [ "./src/vendored/*" ];
-            };
-
             devShells.pre-commit = config.pre-commit.devShell;
             devshells.default = {
               env = [ ];
               # Construct commands from apps, using program description as command help
-              commands = mapAttrsToList
-                (k: v: {
-                  name = k;
-                  help = v.program.meta.description;
-                  category = pipe k [
-                    (splitString "-")
-                    head
-                  ];
-                  command = "nix run $PRJ_ROOT#${k}";
-                })
-                apps;
+              commands = mapAttrsToList (k: v: {
+                name = k;
+                help = v.program.meta.description;
+                category = pipe k [
+                  (splitString "-")
+                  head
+                ];
+                command = "nix run $PRJ_ROOT#${k}";
+              }) apps;
               packages = attrValues {
                 inherit (pkgs)
                   jc

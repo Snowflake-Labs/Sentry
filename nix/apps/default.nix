@@ -6,11 +6,12 @@ let
     Wrapper around writeShellApplication that also sets description and mainProgram.
   */
   mkProgram =
-    { description
-    , name
-    , text
-    , runtimeInputs ? [ ]
-    , ...
+    {
+      description,
+      name,
+      text,
+      runtimeInputs ? [ ],
+      ...
     }:
     (pkgs.writeShellApplication { inherit name text runtimeInputs; }).overrideAttrs {
       meta = {

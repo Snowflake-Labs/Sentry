@@ -3,10 +3,17 @@
 
   Since the script relies on python classes to handle Queries, it uses poetry.
 */
-{ writeShellApplication, mdbook, mdsh }:
+{
+  writeShellApplication,
+  mdbook,
+  mdsh,
+}:
 let
-  /** Produces program for an app that is a wrapper around a small script in python. */
-  wrapPythonScript = { name, pythonScript }:
+  /**
+    Produces program for an app that is a wrapper around a small script in python.
+  */
+  wrapPythonScript =
+    { name, pythonScript }:
     {
       type = "app";
       program = writeShellApplication {
@@ -61,7 +68,10 @@ in
     type = "app";
     program = writeShellApplication {
       name = "mkMdBook";
-      runtimeInputs = [ mdbook mdsh ];
+      runtimeInputs = [
+        mdbook
+        mdsh
+      ];
       text = ''
         # silence pushd and popd
         pushd () {
@@ -88,4 +98,3 @@ in
     };
   };
 }
-

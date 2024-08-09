@@ -14,7 +14,9 @@ let
     }:
     (pkgs.writeShellApplication { inherit name text runtimeInputs; }).overrideAttrs {
       meta = {
+        # Description is used for devshell commands
         inherit description;
+        # mainProgram is needed, otherwise calls to getExe emit a warning
         mainProgram = name;
       };
     };

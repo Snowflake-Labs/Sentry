@@ -34,11 +34,7 @@ let
 in
 {
   # Deployment models
-  localStreamlit = pipe ./local-streamlit [
-    builtins.import
-    (x: x { inherit pkgs; })
-    (mapAttrs (k: v: mkProgram (v // { name = k; })))
-  ];
+  localStreamlit = importPipeline ./local-streamlit (x: x { inherit pkgs; });
   sis = importPipeline ./sis (
     x:
     x {

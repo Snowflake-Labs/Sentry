@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, self', ... }:
 let
   inherit (pkgs.lib) pipe mapAttrs;
 
@@ -20,6 +20,17 @@ let
         mainProgram = name;
       };
     };
+
+  /**
+    The pipeline to import a file, apply whatever arguments are needed to generate the scripts and ultimately apply mkProgram to properly generate derivations.
+  */
+  importPipeline =
+    file: applicationFunction:
+    pipe file [
+      builtins.import
+      applicationFunction
+      (mapAttrs (k: v: mkProgram (v // { name = k; })))
+    ];
 in
 {
   # Deployment models
@@ -28,7 +39,14 @@ in
     (x: x { inherit pkgs; })
     (mapAttrs (k: v: mkProgram (v // { name = k; })))
   ];
-  # sis = import ./sis { inherit pkgs; };
+  sis = importPipeline ./sis (
+    x:
+    x {
+      inherit pkgs;
+      inherit (self'.packages) snowcli;
+    }
+  );
+
   # import ./local-streamlit { inherit pkgs mkProgram; };
   # nativeAppApps = import ./native-app { };
   # gitApps = import ./git { };

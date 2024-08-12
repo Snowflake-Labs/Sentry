@@ -43,6 +43,7 @@ in
       inherit (self'.packages) snowcli;
     }
   );
+  localDocker = importPipeline ./local-docker (x: x { inherit pkgs; });
 
   # import ./local-streamlit { inherit pkgs mkProgram; };
   # nativeAppApps = import ./native-app { };

@@ -45,7 +45,6 @@ in
   );
   localDocker = importPipeline ./local-docker (x: x { inherit pkgs; });
 
-  # import ./local-streamlit { inherit pkgs mkProgram; };
   # nativeAppApps = import ./native-app { };
   # gitApps = import ./git { };
   # sprocApps = import ./sprocs { };

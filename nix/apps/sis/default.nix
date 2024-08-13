@@ -92,6 +92,18 @@ in
         echo "It assumes that the objects to be removed were created from the same Sentry version."
         echo "Some objects may remain"
 
+        function exit_trap(){
+          popd
+        }
+        trap exit_trap EXIT # go back to original dir regardless of the exit codes
+        # Change into proper directory
+        PRJ_ROOT=$(git rev-parse --show-toplevel)
+        pushd "$PRJ_ROOT/src"
+
+        SIS_APP_NAME=$(yq --raw-output ".streamlit.name" ./snowflake.yml)
+
+        snow streamlit drop "$SIS_APP_DATABASE.$SIS_APP_SCHEMA.$SIS_APP_NAME" "$@"
+
         snow sql --filename ${./teardown.sql}
       '';
     inherit runtimeInputs;

@@ -1,38 +1,4 @@
-{ pkgs, ... }:
-let
-  /**
-    Wraps python script with poetry boilerplate.
-  */
-  wrapPythonScript =
-    pythonScript:
-    # bash
-    ''
-      # halt and catch fire if poetry is not available
-      command -v poetry >/dev/null 2>&1 || { echo >&2 "poetry binary not available in PATH; exiting"; exit 1; }
-
-      function exit_trap(){
-        popd
-        popd
-      }
-      trap exit_trap EXIT # go back to original dir regardless of the exit codes
-
-      pushd "''${PRJ_ROOT:-$(git rev-parse --show-toplevel)}"
-
-      POETRY_ENV_PATH=$(poetry env info --path)
-
-      if [ -z "$POETRY_ENV_PATH" ]; then
-        echo "Poetry environment path is not set, check the interpreter"
-        exit
-      fi
-
-      # shellcheck disable=SC1091
-      source "$POETRY_ENV_PATH/bin/activate"
-
-      pushd "src"
-
-      python -c "${pythonScript}"
-    '';
-in
+{ pkgs, wrapPythonScript, ... }:
 {
   mkDoc = {
     text =

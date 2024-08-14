@@ -11,7 +11,10 @@ in
         echo "It will not set up specific authentication(key or password) for the 'sentry_app_user' user"
         echo "Please do that in a separate statement"
 
-        snow sql --filename ${./setup.sql} --variable "rev=$(git rev-parse --short HEAD)"
+        LABEL=$(git rev-parse --short HEAD)
+        # Append '-dirty' if unstaged files
+        test -z "$(git status --porcelain)" || LABEL="$LABEL-dirty"
+        snow sql --filename ${./setup.sql} --variable "rev=$LABEL"
 
         echo "Setup done. Please make sure to set up authentication for the created user."
         echo "Please refer to https://docs.snowflake.com/en/sql-reference/sql/alter-user for authentication parameters"

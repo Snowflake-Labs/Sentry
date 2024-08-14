@@ -72,6 +72,7 @@
               mapAttrsToList
               splitString
               head
+              toLower
               ;
 
             # This attrset will be used in two places:
@@ -125,6 +126,12 @@
                 category = pipe k [
                   (splitString "-")
                   head
+                  # Add spaces to the app category
+                  (builtins.split "([A-Z][a-z]+)") # Split on starts of camelCase
+                  (builtins.filter (x: x != "")) # Remove empty matches
+                  flatten
+                  (builtins.concatStringsSep " ")
+                  toLower
                 ];
                 command = "nix run $PRJ_ROOT#${k}";
               }) apps;

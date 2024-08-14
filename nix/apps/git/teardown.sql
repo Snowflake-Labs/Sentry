@@ -1,0 +1,3 @@
+DROP DATABASE IF EXISTS sentry_git;
+
+DROP API INTEGRATION IF EXISTS sentry_public_github;

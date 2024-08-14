@@ -13,12 +13,29 @@ let
       runtimeInputs ? [ ],
       ...
     }:
-    (pkgs.writeShellApplication { inherit name text runtimeInputs; }).overrideAttrs {
-      meta = {
-        # Description is used for devshell commands
-        inherit description;
-        # mainProgram is needed, otherwise calls to getExe emit a warning
-        mainProgram = name;
+    (pkgs.writeShellApplication {
+      inherit name runtimeInputs;
+      text =
+        # Silence pushd/popd for all scripts
+        ''
+          pushd () {
+            command pushd "$@" > /dev/null
+          }
+
+          popd () {
+            # popd is not passing arguments
+            command popd > /dev/null
+          }
+        ''
+        + text;
+    }).overrideAttrs
+      {
+        meta = {
+          # Description is used for devshell commands
+          inherit description;
+          # mainProgram is needed, otherwise calls to getExe emit a warning
+          mainProgram = name;
+        };
       };
     };
 

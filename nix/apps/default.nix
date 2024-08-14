@@ -37,7 +37,6 @@ let
           mainProgram = name;
         };
       };
-    };
 
   /**
     The pipeline to import a file, apply whatever arguments are needed to generate the scripts and ultimately apply mkProgram to properly generate derivations.
@@ -49,18 +48,22 @@ let
       applicationFunction
       (mapAttrs (k: v: mkProgram (v // { name = k; })))
     ];
-in
-{
-  # Deployment models
-  localStreamlit = importPipeline ./local-streamlit (x: x { inherit pkgs; });
-  sis = importPipeline ./sis (
+
+  applyPkgs = x: x { inherit pkgs; };
+  applyPkgsAndSnowcli =
     x:
     x {
       inherit pkgs;
       inherit (self'.packages) snowcli;
-    }
-  );
-  localDocker = importPipeline ./local-docker (x: x { inherit pkgs; });
+
+    };
+in
+{
+  # Deployment models
+  localStreamlit = importPipeline ./local-streamlit applyPkgs;
+  sis = importPipeline ./sis applyPkgsAndSnowcli;
+  localDocker = importPipeline ./local-docker applyPkgs;
+  nativeApp = importPipeline ./native-app applyPkgsAndSnowcli;
 
   # nativeAppApps = import ./native-app { };
   # gitApps = import ./git { };

@@ -18,9 +18,9 @@ These instructions will set up a python environment to run Sentry in.
     [connections.default]
     account = "<accountName>"
     user = "<userName>"
-    password = "<superSecretPassword>"
     warehouse = "<whName>"
     role = "<role>" # Any role with access to ACCOUNT_USAGE
+    private_key_file = "<pathToPrivateKeyFile>"
     ```
 
 5. Run `poetry shell` to activate the virtual environment

@@ -17,43 +17,66 @@ currently support. Thus Sentry cannot be deployed completely from Snowflake UI.
 
 The steps are:
 
-1. Run SQL to set up a dedicated database and role for the application:
-
-    ```sql
-    USE ROLE useradmin;
-
-    -- User and role to deploy the Streamlit app as
-    CREATE OR REPLACE ROLE sentry_sis_role;
-
-    USE ROLE sysadmin;
-
-    -- Database
-    CREATE OR REPLACE DATABASE sentry_db;
-    -- https://docs.snowflake.com/en/developer-guide/streamlit/owners-rights#about-app-creation
-    GRANT USAGE ON DATABASE sentry_db TO ROLE sentry_sis_role;
-    GRANT USAGE ON SCHEMA sentry_db.public TO ROLE sentry_sis_role;
-    GRANT CREATE STREAMLIT ON SCHEMA sentry_db.public TO ROLE sentry_sis_role;
-    GRANT CREATE STAGE ON SCHEMA sentry_db.public TO ROLE sentry_sis_role;
-
-    -- Warehouse
-    CREATE OR REPLACE WAREHOUSE sentry
-        WITH
-        WAREHOUSE_SIZE = XSMALL
-        INITIALLY_SUSPENDED = TRUE
-    ;
-    GRANT USAGE ON WAREHOUSE sentry to role sentry_sis_role;
-
-    -- Grant access to SNOWFLAKE database
-    USE ROLE ACCOUNTADMIN;
-    GRANT IMPORTED PRIVILEGES ON DATABASE snowflake TO ROLE sentry_sis_role;
-    ```
+1. Run the following SQL code to set up a dedicated database and role for the application.
 
     The created role will be have `OWNERSHIP` privilege on the application. Feel
     free to customize these steps if you would like to change the Sentry's
     runtime environment.
 
-2. Run one of the deployment methods below to send the code into Snowflake and
+<!-- COMMENTs are removed since they contain CD-specific variables -->
+<!-- `$ cat ../../../../nix/apps/sis/setup.sql | grep -v COMMENT` as sql -->
+
+```sql
+-- This script creates necessary objects to deploy Sentry in a separate database as a user with limited privileges.
+
+USE ROLE useradmin;
+
+-- User and role to deploy the Streamlit app as
+CREATE OR REPLACE ROLE sentry_sis_role
+;
+CREATE OR REPLACE USER sentry_sis_user
+    DEFAULT_NAMESPACE = sentry_db.public
+    DEFAULT_ROLE = sentry_sis_role
+    ;
+GRANT ROLE sentry_sis_role TO USER sentry_sis_user;
+
+USE ROLE sysadmin;
+
+-- Database
+CREATE OR REPLACE DATABASE sentry_db
+;
+
+-- Background for these permissions:
+-- https://docs.snowflake.com/en/developer-guide/streamlit/owners-rights#about-app-creation
+GRANT USAGE ON DATABASE sentry_db TO ROLE sentry_sis_role;
+GRANT USAGE ON SCHEMA sentry_db.public TO ROLE sentry_sis_role;
+GRANT CREATE STREAMLIT ON SCHEMA sentry_db.public TO ROLE sentry_sis_role;
+GRANT CREATE STAGE ON SCHEMA sentry_db.public TO ROLE sentry_sis_role;
+
+-- Warehouse
+-- TODO: Drop this when issue #8 is implemented
+CREATE OR REPLACE WAREHOUSE sentry WITH
+    WAREHOUSE_SIZE = XSMALL
+    INITIALLY_SUSPENDED = TRUE
+;
+GRANT USAGE ON WAREHOUSE sentry to role sentry_sis_role;
+
+-- Grant access to SNOWFLAKE database
+-- For more fine-grained access see:
+-- https://docs.snowflake.com/en/sql-reference/account-usage.html#label-enabling-usage-for-other-roles
+USE ROLE accountadmin;
+GRANT IMPORTED PRIVILEGES ON DATABASE snowflake TO ROLE sentry_sis_role;
+
+```
+
+<!-- markdownlint-disable MD029 -->
+2. [Set up authentication][keypair] for the created user
+
+3. Run one of the deployment methods below to send the code into Snowflake and
    set up `STREAMLIT` object
+<!-- markdownlint-enable MD029 -->
+
+If using nix, this step is (mostly) automated through `sis-setUp` application.
 
 ## Github action
 
@@ -65,16 +88,15 @@ The deployment is done through a GitHub action.
    `Actions`
 3. Set up following action secrets:
 
-    - `SIS_GRANT_TO_ROLE` – which role should have access to the Streamlit\
+    - `SIS_OWNER_ROLE` – which role should own the Streamlit app
+    - `SIS_GRANT_TO_ROLE` – which role should have access to the Streamlit
 (e.g. `ACCOUNTADMIN`)
     - `SIS_QUERY_WAREHOUSE` – warehouse for running Streamlit
+    - `SIS_APP_DATABASE` – which database should contain the Streamlit
+      application
     - `SNOWFLAKE_ACCOUNT` – which Snowflake account to deploy Streamlit in
-    - `SNOWFLAKE_DATABASE` – which Snowflake database to deploy Streamlit in
-    - `SNOWFLAKE_SCHEMA` – which Snowflake schema to deploy Streamlit in
     - `SNOWFLAKE_USER` – user to authenticate
-    - `SNOWFLAKE_PASSWORD` – password to authenticate
-    - `SNOWFLAKE_ROLE` – authentication role
-    - `SNOWFLAKE_WAREHOUSE` – warehouse to execute deployment queries
+    - `SNOWFLAKE_PRIVATE_KEY` – private key to authenticate
 
 4. Go to `Actions` and click "Run" on `Deploy Streamlit in Snowflake`
 
@@ -102,18 +124,18 @@ they involve some very specific tools and require familiarity with command line.
 ### With Nix
 
 1. Have prerequisites:
-    - `nix`
+    - [`nix`](https://nixos.org)
     - [`direnv`](https://direnv.net/)
-2. Clone the [source code repository][src]
-3. Go to the cloned directory
-4. Inspect, adjust `.envrc` and allow it (`direnv allow`)
-5. Run `deploy-streamlit-in-snowflake`
-
-The repository provides a wrapper around `snow` that allows pulling the
-credentials from `.envrc`, so there is no need to set up `snow` authentication.
+2. [Configure snowcli connection][snow-conf]. Repository provides `snow` as part
+   of the development shell, thus no need to install it
+3. Clone the [source code repository][src]
+4. Go to the cloned directory
+5. Inspect, adjust `.envrc` and `.env` and allow it (`direnv allow`)
+6. Run `sis-deploy`
 
 [about-sis]: https://docs.snowflake.com/en/developer-guide/streamlit/about-streamlit
 [src]: https://github.com/Snowflake-Labs/Sentry
 [snowcli]: https://github.com/Snowflake-Labs/snowflake-cli
 [snow-install]: https://docs.snowflake.com/developer-guide/snowflake-cli-v2/installation/installation
 [snow-conf]: https://docs.snowflake.com/en/developer-guide/snowflake-cli-v2/connecting/specify-credentials
+[keypair]: https://docs.snowflake.com/en/user-guide/key-pair-auth

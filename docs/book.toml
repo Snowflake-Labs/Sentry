@@ -11,6 +11,9 @@ git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/Snowflake-Labs/Sentry/edit/main/docs/src"
 additional-css = ["custom.css"]
 
+[preprocessor.runConvertedFileIncludes]
+command = "mdsh --inputs ./src/guide/installation/streamlit-in-snowflake.md"
+
 [preprocessor.mkSprocDocs]
 command = "mdsh --inputs ./src/reference/queries.md"
 

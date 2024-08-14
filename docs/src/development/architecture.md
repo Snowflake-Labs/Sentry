@@ -29,20 +29,25 @@ apps).
 
 # CI/CD
 
-CI/CD is implemented using [nix flake](https://nixos.org). This allows for the Github
+CI/CD is implemented using [nix flake](https://nixos.org). This allows for the GitHub
 actions to execute the exact same code as a developer would execute on their
 machine providing strong repeatability and consistency guarantees.
 
 ## CI
 
 Main CI entry point is `nix flake check`. It will perform all syntax checks and
-code lints. A Github action calls `nix flake check` on commits into the main
+code lints. A GitHub action calls `nix flake check` on commits into the main
 branch.
 
 ## CD
 
-Deployment can be triggered by manually calling corresponding Github action and
-depend on Github secrets or secrets passed through environment variables.
+Deployment can be triggered by manually calling corresponding GitHub action and
+depend on GitHub secrets or secrets passed through environment variables.
+
+The deployment uses [snowcli][2] for pushing objects into Snowflake, relying on
+it for authentication and logic.
+
+GitHub actions are provided in the `.github` directory.
 
 # Project organization
 
@@ -74,6 +79,7 @@ The pages structure was chosen to match the [original source of the application]
 
 [1]:
 https://quickstarts.snowflake.com/guide/security_dashboards_for_snowflake/index.html
+[2]: https://docs.snowflake.com/developer-guide/snowflake-cli-v2/index
 
 [^note]: some queries, namely ones calling `SHOW GRANTS` require running the
     stored procedure with `CALLER` rights

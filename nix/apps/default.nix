@@ -11,7 +11,7 @@ in
 
   doc = importPipeline ./doc;
 
-  # gitApps = import ./git { };
+  git = importPipeline ./git;
   # sprocApps = import ./sprocs { };
 
   # docApps = import ./doc { };

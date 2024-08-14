@@ -3,7 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- NOTE: This is generated through mdsh, do not edit by hand -->
 
-<!-- `> nix run .#renderSentryControlMappingTable` -->
+<!-- `> nix run .#doc-renderSentryControlMappingTable` -->
 
 <!-- BEGIN mdsh -->
 | tile_identifier        | title                                                                     | dashboard                   | security_features_checklist   | nist_800_53   | nist_800_171   | hitrust_csf_v9          | mitre_attack_saas                                                                                                                 |

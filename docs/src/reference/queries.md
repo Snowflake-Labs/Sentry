@@ -1,7 +1,7 @@
 # Queries
 <!-- NOTE: This is generated through mdsh, do not edit by hand -->
 
-<!-- `> nix run .#mkSprocDocs | sed 's;^#;##;'` -->
+<!-- `> nix run .#doc-mkSprocDocs | sed 's;^#;##;'` -->
 
 <!-- BEGIN mdsh -->
 ## ACCOUNTADMIN Grants

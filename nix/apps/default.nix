@@ -55,7 +55,6 @@ let
     x {
       inherit pkgs;
       inherit (self'.packages) snowcli;
-
     };
 in
 {

@@ -65,7 +65,8 @@ in
   localDocker = importPipeline ./local-docker applyPkgs;
   nativeApp = importPipeline ./native-app applyPkgsAndSnowcli;
 
-  # nativeAppApps = import ./native-app { };
+  doc = importPipeline ./doc applyPkgs;
+
   # gitApps = import ./git { };
   # sprocApps = import ./sprocs { };
 

@@ -8,12 +8,64 @@ These instructions will walk you through setting up Sentry as a [Streamlit in
 Snowflake application][about-sis]. This approach is best if you don't want to
 manage the python runtime environment.
 
-<div class="warning">
-Sentry source code is in multiple `.py` files which Snowsight editor does not
-currently support. Thus Sentry cannot be deployed completely from Snowflake UI.
-</div>
+## Git integration
 
-<!-- TODO: snowgit streamlit setup when available -->
+To deploy Sentry from a single set of SQL statements:
+
+<!-- `$ cat ./sis-git-setup.sql | grep -v COMMENT` as sql -->
+
+```sql
+-- Optional: set up dedicated role to own the Streamlit app
+USE ROLE useradmin;
+CREATE OR REPLACE ROLE sentry_sis_role;
+GRANT ROLE sentry_sis_role TO ROLE sysadmin;
+-- End of role setup
+
+-- Optional: database setup
+USE ROLE sysadmin;
+CREATE OR REPLACE DATABASE sentry_db;
+-- End of database setup
+
+-- Optional: if using a custom warehouse
+-- TODO: Drop this when issue #8 is implemented
+CREATE OR REPLACE WAREHOUSE sentry WITH
+    WAREHOUSE_SIZE = XSMALL
+    INITIALLY_SUSPENDED = TRUE
+;
+GRANT USAGE ON WAREHOUSE sentry to ROLE sentry_sis_role;
+-- End of warehouse setup
+
+USE ROLE ACCOUNTADMIN;
+CREATE OR REPLACE API INTEGRATION gh_snowflake_labs
+    API_PROVIDER = GIT_HTTPS_API
+    API_ALLOWED_PREFIXES = ('https://github.com/Snowflake-Labs')
+    ENABLED = TRUE;
+
+USE ROLE sysadmin;
+CREATE OR REPLACE GIT REPOSITORY sentry_db.public.sentry_repo
+    API_INTEGRATION = GH_SNOWFLAKE_LABS
+    ORIGIN = 'https://github.com/Snowflake-Labs/Sentry/';
+
+-- Optional, if using custom role
+GRANT USAGE ON DATABASE sentry_db TO ROLE sentry_sis_role;
+GRANT USAGE ON SCHEMA sentry_db.public TO ROLE sentry_sis_role;
+GRANT READ ON GIT REPOSITORY sentry_db.public.sentry_repo TO ROLE sentry_sis_role;
+GRANT CREATE STREAMLIT ON SCHEMA sentry_db.public TO ROLE sentry_sis_role;
+USE ROLE accountadmin;
+GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE TO ROLE sentry_sis_role;
+USE ROLE sentry_sis_role;
+--
+
+CREATE OR REPLACE STREAMLIT sentry_db.public.sentry
+    ROOT_LOCATION = '@sentry_db.public.sentry_repo/branches/main/src'
+    MAIN_FILE = '/Authentication.py'
+    QUERY_WAREHOUSE = SENTRY; -- Replace the warehouse if needed
+
+-- Share the streamlit app with needed roles
+GRANT USAGE ON STREAMLIT sentry_db.public.sentry TO ROLE SYSADMIN;
+```
+
+## Manual
 
 The steps are:
 
@@ -80,7 +132,7 @@ If using nix, this step is (mostly) automated through `sis-setUp` application.
 
 ## Github action
 
-This is the easiest way to deploy the application but offers least flexibility.
+This approach may be paired with a CI system that implements additional checks.
 The deployment is done through a GitHub action.
 
 1. (after running SQL above) Fork/clone the [source code repository][src]

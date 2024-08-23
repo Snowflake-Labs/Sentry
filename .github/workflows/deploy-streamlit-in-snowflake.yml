@@ -5,6 +5,8 @@ on:
 jobs:
   deploy-streamlit-in-snowflake:
     runs-on: ubuntu-latest
+    env:
+      SNOWFLAKE_PRIVATE_KEY_PATH: /home/runner/work/key.p8
 
     steps:
       # Boilerplate
@@ -12,21 +14,33 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
 
+      # Setup snowcli authentication from secrets
+      - name: Setup private key from GH secrets
+        shell: bash
+        run: |
+          mkdir -p ~/.snowflake
+          echo "${{ secrets.SNOWFLAKE_PRIVATE_KEY }}" > ${{ env.SNOWFLAKE_PRIVATE_KEY_PATH }}
+
+      - name: Setup snowcli from GH secrets
+        shell: bash
+        run: |
+          mkdir -p ~/.snowflake
+          cat <<EOF > ~/.snowflake/config.toml
+          [connections.default]
+          account = ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          user = ${{ secrets.SNOWFLAKE_USER }}
+          authenticator = "SNOWFLAKE_JWT"
+          private_key_path = "${{ env.SNOWFLAKE_PRIVATE_KEY_PATH }}"
+          EOF
+
       # Actual deployment action
       - name: "Deploy Streamlit in Snowflake"
         # Effectively runs a wrapper around a tiny build script + snowcli to deploy the application
-        # For the wrapper source, see flake.nix
-        run: nix run .#deploy-streamlit-in-snowflake
+        # See $PRJ_ROOT/nix/apps/sis/default.nix for source
+        run: nix run .#sis-deploy
         env:
-          # This repo uses a custom wrapper around Snowflake CLI
-          # For alternative GH action config, see
-          # https://github.com/snowflakedb/snowflake-cli/issues/872
-          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
-          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SIS_OWNER_ROLE: ${{ secrets.SIS_OWNER_ROLE }}
+          SIS_APP_DATABASE: ${{ secrets.SIS_APP_DATABASE }}
+          SIS_APP_SCHEMA: PUBLIC
           SIS_QUERY_WAREHOUSE: ${{ secrets.SIS_QUERY_WAREHOUSE }}
           SIS_GRANT_TO_ROLE: ${{ secrets.SIS_GRANT_TO_ROLE }}

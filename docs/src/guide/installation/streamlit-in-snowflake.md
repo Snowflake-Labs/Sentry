@@ -65,7 +65,7 @@ CREATE OR REPLACE STREAMLIT sentry_db.public.sentry
 GRANT USAGE ON STREAMLIT sentry_db.public.sentry TO ROLE SYSADMIN;
 ```
 
-## Manual
+## Manual setup
 
 The steps are:
 

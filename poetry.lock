@@ -1666,29 +1666,31 @@ secure-local-storage = ["keyring (>=23.1.0,<26.0.0)"]
 
 [[package]]
 name = "snowflake-snowpark-python"
-version = "1.15.0"
+version = "1.20.0"
 description = "Snowflake Snowpark for Python"
 optional = false
 python-versions = "<3.12,>=3.8"
 files = [
-    {file = "snowflake_snowpark_python-1.15.0-py3-none-any.whl", hash = "sha256:17db1aae393a595caf1f07457366001eba5a8ca4b070f9970bed75efdc2c9a30"},
-    {file = "snowflake_snowpark_python-1.15.0.tar.gz", hash = "sha256:b96ecde5717c9a409020b930c79f6f7d46dc7af1178ea403e8b672643d83406a"},
+    {file = "snowflake_snowpark_python-1.20.0-py3-none-any.whl", hash = "sha256:d650710a808b5639180441bfa422817c0d54235cc0694866572218de4c512069"},
+    {file = "snowflake_snowpark_python-1.20.0.tar.gz", hash = "sha256:514dafc962121359a7d9c3cc7b49f19dae6af0a53fa2ad8a6a7da02b7ed33fc9"},
 ]
 
 [package.dependencies]
 cloudpickle = {version = ">=1.6.0,<2.1.0 || >2.1.0,<2.2.0 || >2.2.0,<=2.2.1", markers = "python_version < \"3.11\""}
 pyyaml = "*"
 setuptools = ">=40.6.0"
-snowflake-connector-python = ">=3.6.0,<4.0.0"
+snowflake-connector-python = ">=3.10.0,<4.0.0"
 typing-extensions = ">=4.1.0,<5.0.0"
 wheel = "*"
 
 [package.extras]
-development = ["cachetools", "coverage", "pre-commit", "pytest (<8.0.0)", "pytest-cov", "pytest-timeout", "sphinx (==5.0.2)"]
-localtest = ["pandas", "pyarrow", "requests"]
+development = ["cachetools", "coverage", "matplotlib", "openpyxl", "pre-commit", "pytest (<8.0.0)", "pytest-cov", "pytest-timeout", "pytest-xdist", "sphinx (==5.0.2)"]
+localtest = ["pandas", "requests"]
+modin = ["modin (==0.28.1)", "snowflake-connector-python[pandas] (>=3.10.0,<4.0.0)"]
+modin-development = ["cachetools", "coverage", "decorator", "matplotlib", "modin (==0.28.1)", "openpyxl", "pre-commit", "pytest (<8.0.0)", "pytest-assume", "pytest-cov", "pytest-timeout", "pytest-xdist", "scipy", "snowflake-connector-python[pandas] (>=3.10.0,<4.0.0)", "sphinx (==5.0.2)", "statsmodels"]
 opentelemetry = ["opentelemetry-api (>=1.0.0,<2.0.0)", "opentelemetry-sdk (>=1.0.0,<2.0.0)"]
-pandas = ["snowflake-connector-python[pandas] (>=3.6.0,<4.0.0)"]
-secure-local-storage = ["snowflake-connector-python[secure-local-storage] (>=3.6.0,<4.0.0)"]
+pandas = ["snowflake-connector-python[pandas] (>=3.10.0,<4.0.0)"]
+secure-local-storage = ["snowflake-connector-python[secure-local-storage] (>=3.10.0,<4.0.0)"]
 
 [[package]]
 name = "sortedcontainers"
@@ -1950,4 +1952,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.8"
-content-hash = "4ad58f693dfb7e8bbea79e75497e4db64580d238230ef68f792a413eb454d636"
+content-hash = "aa8d224236ff52aa597e4275469c8f237979635cd7976d25a1a49704e3e682d4"

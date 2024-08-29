@@ -20,3 +20,5 @@ command = "mdsh --inputs ./src/reference/queries.md"
 [preprocessor.renderControlMapping]
 command = "mdsh --inputs ./src/reference/control-mapping.md"
 
+[preprocessor.updateReadme]
+command = "mdsh --inputs ./src/guide/installation/README.md"

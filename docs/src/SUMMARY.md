@@ -27,6 +27,7 @@
 - [Queries](./reference/queries.md)
 <!-- TODO: merge here -->
 - [Control Mapping](./reference/control-mapping.md)
+- [Log Sources](./reference/log-sources.md)
 
 # Development
 

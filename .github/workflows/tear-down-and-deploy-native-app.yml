@@ -12,7 +12,6 @@ jobs:
       # Boilerplate
       - uses: actions/checkout@v3
       - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       # Actual deployment action
       - name: "Tear down and create the application"

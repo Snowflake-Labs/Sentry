@@ -12,7 +12,6 @@ jobs:
       # Boilerplate
       - uses: actions/checkout@v3
       - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       # Setup snowcli authentication from secrets
       - name: Setup private key from GH secrets

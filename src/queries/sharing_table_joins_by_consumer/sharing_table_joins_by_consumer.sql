@@ -6,7 +6,7 @@ accesses as (
     lah.query_token,
     lah.consumer_account_locator
   from SNOWFLAKE.DATA_SHARING_USAGE.LISTING_ACCESS_HISTORY as lah
-  join lateral flatten(input=>lah.listing_objects_accessed) as los
+  join lateral flatten(input=>lah.application_objects_accessed) as los
   where true
     and los.value:"objectDomain"::string in ('Table', 'View')
     and query_date between '2024-03-21' and '2024-03-30'

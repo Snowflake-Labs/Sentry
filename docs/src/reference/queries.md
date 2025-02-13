@@ -1378,7 +1378,7 @@ res :=(select
   count(distinct lah.query_token) as n_queries,
   count(distinct lah.consumer_account_locator) as n_distinct_consumer_accounts
 from SNOWFLAKE.DATA_SHARING_USAGE.LISTING_ACCESS_HISTORY as lah
-join lateral flatten(input=>lah.listing_objects_accessed) as los
+join lateral flatten(input=>lah.application_objects_accessed) as los
 join lateral flatten(input=>los.value, path=>'columns') as cols
 where true
   and los.value:"objectDomain"::string in ('Table', 'View')
@@ -1412,7 +1412,7 @@ res :=(select
   consumer_account_locator,
   count(distinct lah.query_token) as n_queries
 from SNOWFLAKE.DATA_SHARING_USAGE.LISTING_ACCESS_HISTORY as lah
-join lateral flatten(input=>lah.listing_objects_accessed) as los
+join lateral flatten(input=>lah.application_objects_accessed) as los
 where true
   and query_date between '2024-03-21' and '2024-03-30'
 group by 1,2,3,4,5,6
@@ -1569,7 +1569,7 @@ accesses as (
     lah.query_token,
     lah.consumer_account_locator
   from SNOWFLAKE.DATA_SHARING_USAGE.LISTING_ACCESS_HISTORY as lah
-  join lateral flatten(input=>lah.listing_objects_accessed) as los
+  join lateral flatten(input=>lah.application_objects_accessed) as los
   where true
     and los.value:"objectDomain"::string in ('Table', 'View')
     and query_date between '2024-03-21' and '2024-03-30'

@@ -21,7 +21,7 @@ jobs:
       # Python setup
       - name: Install poetry
         run: |
-          nix profile install nixpkgs#poetry
+          nix profile install .#poetry
       # Project runs against this version specifically, nixpkgs has only 3.11
       - uses: actions/setup-python@v5
         with:

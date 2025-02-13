@@ -44,7 +44,6 @@
         perSystem =
           {
             config,
-            inputs',
             pkgs,
             self',
             ...
@@ -94,7 +93,7 @@
           {
             packages = rec {
               # This package is used to pin and propagate snowcli version
-              snowcli = inputs'.snowcli.packages.snowcli-2x;
+              snowcli = pkgs.snowflake-cli;
 
               # TODO: Replace with nix package in #11
               # For now specify snowcli so `nix flake check` passes

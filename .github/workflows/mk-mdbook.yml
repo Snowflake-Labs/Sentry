@@ -28,7 +28,7 @@ jobs:
           python-version: '3.11'
       - name: Setup python
         run: |
-          poetry install
+          poetry install --no-root
 
       # Build the docs
       - name: Build Book

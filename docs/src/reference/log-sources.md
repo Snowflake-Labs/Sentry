@@ -1,8 +1,20 @@
+<!-- markdownlint-disable MD033 -->
+
 # Log Sources for Security Monitoring
 
-Customers can monitor their Snowflake deployment for potential indicators of compromise by integrating Snowflake log sources with their Security Information and Event Monitoring (SIEM) solution. This guide documents the security identifiers and the Information Schema and Account Usage columns that Snowflake recommends customers monitor. In addition, this publication maps columns to the MITRE ATT&CK SaaS Matrix, an industry framework that helps security analysts implement detection and response controls that align to their organization's incident response procedures.
+Customers can monitor their Snowflake deployment for potential indicators of
+compromise by integrating Snowflake log sources with their Security Information
+and Event Monitoring (SIEM) solution. This guide documents the security
+identifiers and the Information Schema and Account Usage columns that Snowflake
+recommends customers monitor. In addition, this publication maps columns to the
+MITRE ATT&CK SaaS Matrix, an industry framework that helps security analysts
+implement detection and response controls that align to their organization's
+incident response procedures.
 
 ## Security Identifiers and Views
+
+<!-- This rule is incompatible with tables -->
+<!-- markdownlint-disable MD013 -->
 | Security Identifier/View | Columns | Schema Location | Latency | MITRE ATT&CK |
 |---|---|---|---|---|
 | `APPLICABLE_ROLES` | `GRANTEE`<br>`ROLE_NAME`<br>`ROLE_OWNER`<br>`IS_GRANTABLE` | `INFORMATION_SCHEMA` | n/a | <a href="https://attack.mitre.org/techniques/T1060/" target="_blank">T1060- Permission Group Discovery</a><br><a href="https://attack.mitre.org/techniques/T1087/" target="_blank">T1087 - Account Discovery</a> |

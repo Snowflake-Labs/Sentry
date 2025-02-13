@@ -5,18 +5,6 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs.follows = "nixpkgs-stable";
-    snowcli = {
-      url = "github:sfc-gh-vtimofeenko/snowcli-nix-flake";
-
-      inputs = {
-        nixpkgs-unstable.follows = "nixpkgs-unstable";
-        nixpkgs.follows = "nixpkgs-unstable";
-        # development
-        devshell.follows = "devshell";
-        pre-commit-hooks-nix.follows = "pre-commit-hooks-nix";
-        treefmt-nix.follows = "treefmt-nix";
-      };
-    };
 
     flake-parts.url = "github:hercules-ci/flake-parts";
     devshell = {

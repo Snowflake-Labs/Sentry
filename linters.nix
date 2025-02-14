@@ -42,7 +42,7 @@ _: {
           };
           projectRootFile = "flake.nix";
           # Vendored modules are explicitly excluded from formatter to stay as close to upstream as possible
-          settings.global.excludes = [ "./src/vendored/*" ];
+          settings.global.excludes = [ "src/vendored/*" ];
         };
 
         pre-commit.settings =

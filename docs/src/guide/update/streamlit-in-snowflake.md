@@ -1,6 +1,21 @@
 # Streamlit in Snowflake
 
-To update Streamlit in Snowflake application, re-run the [installation
+Depending on the installation method, you may want to use different methods of
+updating Sentry installed as Streamlit in Snowflake.
+
+## Git integration
+
+Application installed through the [Git
+integration](../installation/streamlit-in-snowflake.md#git-integration) method
+can be updated by running `ALTER GIT REPOSITORY FETCH`
+([doc](https://docs.snowflake.com/en/sql-reference/sql/alter-git-repository)).
+
+To run this command periodically, you may want to `CREATE
+TASK`([doc](https://docs.snowflake.com/en/sql-reference/sql/create-task)).
+
+## Other installation methods
+
+Sentry is stateless, so it can be updated by re-running the [installation
 instructions](../installation/streamlit-in-snowflake.md) skipping the initial
 SQL code.
 

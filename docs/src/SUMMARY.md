@@ -33,3 +33,4 @@
 
 - [Architecture](./development/architecture.md)
 - [Contributing](./development/CONTRIBUTING.md)
+- [Adding a query](./development/adding-a-query.md)

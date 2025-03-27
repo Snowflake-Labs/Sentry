@@ -1,0 +1,17 @@
+# vNext
+
+# v0.0.2
+
+* fix: escape IDENTIFIER with double quotes to allow using identifiers with
+  non-standard characters
+
+
+# v0.0.1
+
+Initial pinned version.
+
+Has:
+
+- Two pages: user management and network rule management
+- User management allows unsetting a user's password and changing users' type
+- Network rule management allows creating a network policy based on users' login patterns

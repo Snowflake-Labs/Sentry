@@ -43,46 +43,54 @@ def user_management():
         first_authentication_factor AS auth_method,
         count(*) AS num_of_times,
         max(event_timestamp) AS last_time_used
-
     FROM snowflake.account_usage.login_history
     WHERE client_ip != '0.0.0.0'
     AND is_success = 'YES'
-    GROUP BY 1, 2 ORDER BY 1, 2
+    GROUP BY 1, 2
+    ),
+    user_network_policy as (
+    select user_name,
+    'CREATE NETWORK POLICY ' || translate(user_name, '@+.', '___') || '_POLICY ALLOWED_IP_LIST=(''' ||
+    listagg(distinct client_ip, ''',''') within group (order by client_ip) || ''');' as run_these
+    from snowflake.account_usage.login_history
+    where client_ip != '0.0.0.0' and is_success = 'YES'
+    group by user_name
     )
     SELECT
         name,
+        login_name,
+        email,
         type,
         default_role,
         disabled,
         has_password,
         password_last_set_time,
+        last_success_login,
         has_rsa_public_key,
         has_mfa,
         snowflake_lock,
+        owner,
         saml.num_of_times saml_num_of_times,
         saml.last_time_used saml_last_time_used,
         keypair.num_of_times keypair_num_of_times,
         keypair.last_time_used keypair_last_time_used,
         oauth.num_of_times oauth_num_of_times,
-        oauth.last_time_used oauth_last_time_used
+        oauth.last_time_used oauth_last_time_used,
+        nvl(nvl(unetpol.policy_name, anetpol.policy_name), run_these) as policy_name_or_possible_policy,
+        run_these as possible_policy
     FROM
         snowflake.account_usage.users u
-        LEFT JOIN last_authentication_method saml
-            ON
-                u.name = saml.user_name
-                AND saml.auth_method = 'SAML2_ASSERTION'
-        LEFT JOIN last_authentication_method keypair
-            ON
-                u.name = keypair.user_name
-                AND keypair.auth_method = 'RSA_KEYPAIR'
-        LEFT JOIN last_authentication_method oauth
-            ON
-                u.name = oauth.user_name
-                AND oauth.auth_method = 'OAUTH_ACCESS_TOKEN'
-    WHERE
-        1 = 1
-        NEEDLE
-    ORDER BY has_password = true DESC, password_last_set_time;
+        LEFT JOIN last_authentication_method saml ON u.name = saml.user_name AND saml.auth_method = 'SAML2_ASSERTION'
+        LEFT JOIN last_authentication_method keypair ON u.name = keypair.user_name AND keypair.auth_method = 'RSA_KEYPAIR'
+        LEFT JOIN last_authentication_method oauth ON u.name = oauth.user_name AND oauth.auth_method = 'OAUTH_ACCESS_TOKEN'
+        LEFT JOIN snowflake.account_usage.policy_references unetpol ON NAME = unetpol.ref_entity_name AND unetpol.policy_kind = 'NETWORK_POLICY' AND unetpol.ref_entity_domain = 'USER'
+        left join snowflake.account_usage.policy_references anetpol on anetpol.policy_kind = 'NETWORK_POLICY' and anetpol.ref_entity_domain = 'ACCOUNT'
+        left join user_network_policy pol on u.name = pol.user_name
+        WHERE
+            1 = 1
+            and u.deleted_on is null and (u.type != 'SNOWFLAKE_SERVICE' or u.type is null)
+            NEEDLE
+        ORDER BY has_password = true DESC, password_last_set_time;
     """
 
     @dataclass

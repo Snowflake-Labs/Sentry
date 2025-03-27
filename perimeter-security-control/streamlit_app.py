@@ -116,7 +116,11 @@ def user_management():
                 applied_filters = filters
 
             applied_filters = pipe(
-                applied_filters, cmap(asdict), cpluck("rule"), cmap(lambda it: f"AND {it}"), "\n ".join
+                applied_filters,
+                cmap(asdict),
+                cpluck("rule"),
+                cmap(lambda it: f"AND {it}"),
+                "\n ".join,
             )
 
             final_query = re.sub("NEEDLE", applied_filters, query)
@@ -135,9 +139,15 @@ def user_management():
             btn_label=f"Set '{future_user_type}' user type",
         )
 
-    filters = [PreFilter("User has password set", "has_password=true"), PreFilter("User has MFA set", "has_mfa=true")]
+    filters = [
+        PreFilter("User has password set", "has_password=true"),
+        PreFilter("User has MFA set", "has_mfa=true"),
+    ]
 
-    password = Action(mk_query=lambda it: f"ALTER USER IDENTIFIER('\"{it}\"') UNSET PASSWORD", btn_label="Unset password")
+    password = Action(
+        mk_query=lambda it: f"ALTER USER IDENTIFIER('\"{it}\"') UNSET PASSWORD",
+        btn_label="Unset password",
+    )
     to_person_type = _mk_user_type_action("PERSON")
     to_service_type = _mk_user_type_action("SERVICE")
     to_legacy_service_type = _mk_user_type_action("LEGACY_SERVICE")
@@ -235,7 +245,12 @@ def network_rules():
     st.write("Select an IP address from this list to generate the network rule")
     search_by_user = st.multiselect(
         label="Search by user",
-        options=pipe(data["USERS"].tolist(), cmap(lambda it: it.split(", ")), lambda it: itertools.chain(*it), set),
+        options=pipe(
+            data["USERS"].tolist(),
+            cmap(lambda it: it.split(", ")),
+            lambda it: itertools.chain(*it),
+            set,
+        ),
     )
 
     def _filter_by_users(row) -> bool:
@@ -244,7 +259,12 @@ def network_rules():
             return True
         # Else, filter the row value by checking if the set contains one of the selected users
         return pipe(
-            row["USERS"], lambda it: it.split(", "), set, lambda it: it.intersection(set(search_by_user)), len, bool
+            row["USERS"],
+            lambda it: it.split(", "),
+            set,
+            lambda it: it.intersection(set(search_by_user)),
+            len,
+            bool,
         )
 
     event = st.dataframe(
@@ -267,7 +287,12 @@ def network_rules():
         policy_name = c1.text_input("Name the network policy")
         # Network policy is a schema object
         target_db = c2.selectbox(
-            label="Database", options=pipe("SHOW TERSE DATABASES", lambda it: session.sql(it).collect(), cpluck("name"))
+            label="Database",
+            options=pipe(
+                "SHOW TERSE DATABASES",
+                lambda it: session.sql(it).collect(),
+                cpluck("name"),
+            ),
         )
         target_schema = c3.selectbox(
             label="Schema",
@@ -275,7 +300,9 @@ def network_rules():
                 f"SHOW TERSE SCHEMAS IN DATABASE IDENTIFIER('{target_db}')",
                 lambda it: session.sql(it).collect(),
                 cpluck("name"),
-                cfilter(lambda it: it.lower() != "information_schema"), # INFORMATION_SCHEMA is read-only
+                cfilter(
+                    lambda it: it.lower() != "information_schema"
+                ),  # INFORMATION_SCHEMA is read-only
             ),
         )
 
@@ -295,7 +322,10 @@ def network_rules():
 
 pipe(
     # Add pages here
-    [(user_management, "User management", "person"), (network_rules, "Network rules", "vpn_lock")],
+    [
+        (user_management, "User management", "person"),
+        (network_rules, "Network rules", "vpn_lock"),
+    ],
     # Transform tuples into format compatible with st.Page signature
     cmap(lambda it: {"page": it[0], "title": it[1], "icon": f":material/{it[2]}:"}),
     # Call st.Page

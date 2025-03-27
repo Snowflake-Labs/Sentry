@@ -12,4 +12,5 @@ dependencies = [
 [dependency-groups]
 dev = [
     "snowflake-cli>=3.2.1",
+    "watchdog>=5.0.3",
 ]

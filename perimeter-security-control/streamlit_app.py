@@ -103,6 +103,7 @@ def user_management():
         human_name: str
         rule: str  # Gets appended to the WHERE clause
         enabled: bool = False
+        # TODO: add a help box to show why one would care about the state of this filter
 
         def should_be_enabled(self):
             """Render the checkbox and set the enabled property of the object."""
@@ -149,7 +150,13 @@ def user_management():
 
     filters = [
         PreFilter("User has password set", "has_password=true"),
-        PreFilter("User has MFA set", "has_mfa=true"),
+        PreFilter("User has not enrolled in MFA", "has_mfa=false"),
+        PreFilter("User has used SSO", "saml_last_time_used is not null"),
+        # NOTE: this is technically more like "user's login is shaped like an
+        # email address", since there is a separate email field?
+        PreFilter(
+            "User appears to have an email address", "u.login_name ilike '%@%.%'"
+        ),
     ]
 
     password = Action(
@@ -165,7 +172,8 @@ def user_management():
     # UI starts here
 
     # Render pre-filters, collect checkbox status
-    st.header("Filters")
+    st.write("""Please use the Filters and grid sorting to find users you can choose to remove passwords for or
+             assign User Types.""")
     filters = pipe(
         filters,
         cmap(cdo(PreFilter.should_be_enabled)),
@@ -207,14 +215,14 @@ def user_management():
         selection_mode="multi-row",
     )
 
-    st.header("Selected users")
+    st.write("Click rows, or select-all to populate the grid below and...")
     people = event.selection.rows
     st.write(data.iloc[people][show_columns])
 
     selected_users = data.iloc[people]["NAME"].tolist()
 
     # Render the UI for the actions
-    st.header("Actions")
+    st.write("...click a button to take action on those users.")
     for col, action in zip(st.columns(len(actions)), actions):
         if col.button(action.btn_label):
             if len(selected_users) >= 1:
@@ -230,6 +238,9 @@ def user_management():
 
             else:
                 st.info("Please select at least one user")
+
+    st.info("""Note: results from your actions won't appear above for a few hours because of the standard
+            [`ACCOUNT_USAGE` latency](https://docs.snowflake.com/en/sql-reference/account-usage#data-latency)""")
 
 
 def network_rules():

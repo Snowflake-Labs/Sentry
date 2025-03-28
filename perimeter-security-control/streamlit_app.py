@@ -153,8 +153,9 @@ def user_management():
         PreFilter("User has not enrolled in MFA", "has_mfa=false"),
         PreFilter("User has used SSO", "saml_last_time_used is not null"),
         PreFilter(
-            "User appears to have an email address", "u.login_name ilike '%@%.%'",
-            help="Often email-like usernames indicate human users"
+            "User appears to have an email address",
+            "u.login_name ilike '%@%.%'",
+            help="Often email-like usernames indicate human users",
         ),
     ]
 
@@ -243,6 +244,7 @@ def user_management():
 
     with st.expander("User retrieval query"):
         st.code(query, language="sql")
+
 
 pipe(
     # Add pages here

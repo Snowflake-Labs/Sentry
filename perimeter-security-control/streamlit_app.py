@@ -133,7 +133,7 @@ def user_management():
             )
 
             final_query = re.sub("NEEDLE", applied_filters, query)
-        return session.sql(final_query).to_pandas()
+        return session.sql(final_query).to_pandas(), final_query
 
     @dataclass
     class Action:
@@ -180,7 +180,7 @@ def user_management():
         cfilter(lambda it: it.enabled),
         list,
     )
-    data = get_data(filters)
+    data, query = get_data(filters)
 
     show_columns = pipe(
         data,
@@ -242,6 +242,8 @@ def user_management():
     st.info("""Note: results from your actions won't appear above for a few hours because of the standard
             [`ACCOUNT_USAGE` latency](https://docs.snowflake.com/en/sql-reference/account-usage#data-latency)""")
 
+    with st.expander("User retrieval query"):
+        st.code(query, language="sql")
 
 pipe(
     # Add pages here

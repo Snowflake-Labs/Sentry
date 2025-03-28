@@ -103,11 +103,11 @@ def user_management():
         human_name: str
         rule: str  # Gets appended to the WHERE clause
         enabled: bool = False
-        # TODO: add a help box to show why one would care about the state of this filter
+        help: Optional[str] = None
 
         def should_be_enabled(self):
             """Render the checkbox and set the enabled property of the object."""
-            self.enabled = st.checkbox(self.human_name)
+            self.enabled = st.checkbox(self.human_name, help=self.help)
 
     # `cache_data` allows caching the data on the streamlit process side
     # it also allows operating on the rows that were selected in the table
@@ -152,10 +152,9 @@ def user_management():
         PreFilter("User has password set", "has_password=true"),
         PreFilter("User has not enrolled in MFA", "has_mfa=false"),
         PreFilter("User has used SSO", "saml_last_time_used is not null"),
-        # NOTE: this is technically more like "user's login is shaped like an
-        # email address", since there is a separate email field?
         PreFilter(
-            "User appears to have an email address", "u.login_name ilike '%@%.%'"
+            "User appears to have an email address", "u.login_name ilike '%@%.%'",
+            help="Often email-like usernames indicate human users"
         ),
     ]
 

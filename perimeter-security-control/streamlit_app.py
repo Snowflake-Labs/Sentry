@@ -239,8 +239,8 @@ def user_management():
             else:
                 st.info("Please select at least one user")
 
-    st.info("""Note: results from your actions won't appear above for a few hours because of the standard
-            [`ACCOUNT_USAGE` latency](https://docs.snowflake.com/en/sql-reference/account-usage#data-latency)""")
+    st.info("""Note: actions are applied immediately, but they won't appear in the table above for a few hours because of
+            the standard [`ACCOUNT_USAGE` latency](https://docs.snowflake.com/en/sql-reference/account-usage#data-latency)""")
 
     with st.expander("User retrieval query"):
         st.code(query, language="sql")

@@ -234,7 +234,9 @@ def user_management():
     # Render the UI for the actions
     @st.dialog("Confirm changes")
     def confirm() -> Optional[bool]:
-        st.write(f"Confirm password removal for the following {len(selected_users)} users:")
+        st.write(
+            f"Confirm password removal for the following {len(selected_users)} users:"
+        )
         st.write(selected_users)
 
         st.session_state["confirmed_password_change"] = False

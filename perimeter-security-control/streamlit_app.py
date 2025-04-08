@@ -180,8 +180,10 @@ def user_management():
     # UI starts here
 
     # Render pre-filters, collect checkbox status
-    st.write("""Please use the Filters and grid sorting to find users you can choose to remove passwords for or
-             assign User Types.""")
+    st.write(
+        """Please use the Filters and grid sorting to find users you can choose to remove passwords for or
+             assign User Types."""
+    )
     filters = pipe(
         filters,
         cmap(cdo(PreFilter.should_be_enabled)),

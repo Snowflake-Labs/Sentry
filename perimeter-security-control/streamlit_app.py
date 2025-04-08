@@ -142,6 +142,14 @@ def user_management():
         mk_query: Callable
         btn_label: str
 
+        def apply_to_users(self, users) -> list[str]:
+            return pipe(
+                users,  # Take users
+                cmap(self.mk_query),  # Create queries
+                cmap(cdo(lambda it: session.sql(it).collect())),
+                list,
+            )
+
     def _mk_user_type_action(future_user_type):
         return Action(
             mk_query=lambda it: f"ALTER USER IDENTIFIER('\"{it}\"') SET TYPE = {future_user_type}",
@@ -222,25 +230,52 @@ def user_management():
     selected_users = data.iloc[people]["NAME"].tolist()
 
     # Render the UI for the actions
+    @st.dialog("Confirm changes")
+    def confirm() -> Optional[bool]:
+        st.write(f"Confirm password removal for the following {len(selected_users)} users:")
+        st.write(selected_users)
+
+        st.session_state["confirmed_password_change"] = False
+        # st.rerun will close the modal
+        if st.button("Confirm"):
+            st.session_state["confirmed_password_change"] = True
+            st.rerun()
+
+        if st.button("Discard"):
+            st.rerun()
+
+    if "confirmed_password_change" not in st.session_state:
+        st.session_state["confirmed_password_change"] = None
+
     st.write("...click a button to take action on those users.")
     for col, action in zip(st.columns(len(actions)), actions):
         if col.button(action.btn_label):
             if len(selected_users) >= 1:
-                changes = pipe(
-                    selected_users,  # Take users
-                    cmap(action.mk_query),  # Create queries
-                    cmap(cdo(lambda it: session.sql(it).collect())),
-                    list,
-                )
-                st.info("All done")
-                with st.expander("Queries ran"):
-                    pipe(changes, "\n".join, st.code)
+                # Ask the user to confirm removing password from users
+                if action is password:
+                    confirm()
+
+                if action is not password:
+                    changes = action.apply_to_users(selected_users)
+                    st.info("All done")
+                    with st.expander("Queries ran"):
+                        pipe(changes, "\n".join, st.code)
 
             else:
                 st.info("Please select at least one user")
 
-    st.info("""Note: actions are applied immediately, but they won't appear in the table above for a few hours because of
-            the standard [`ACCOUNT_USAGE` latency](https://docs.snowflake.com/en/sql-reference/account-usage#data-latency)""")
+        if st.session_state["confirmed_password_change"]:
+            changes = action.apply_to_users(selected_users)
+            st.info("All done")
+            with st.expander("Queries ran"):
+                pipe(changes, "\n".join, st.code)
+
+            st.session_state["confirmed_password_change"] = False
+
+    st.info(
+        """Note: actions are applied immediately, but they won't appear in the table above for a few hours because of
+            the standard [`ACCOUNT_USAGE` latency](https://docs.snowflake.com/en/sql-reference/account-usage#data-latency)"""
+    )
 
     with st.expander("User retrieval query"):
         st.code(query, language="sql")

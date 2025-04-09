@@ -197,6 +197,10 @@ def user_management():
     # UI starts here
 
     # Render pre-filters, collect checkbox status
+    st.info(
+        """This application is a best effort tool for use by Snowflake Customers. Its generated output should be
+                carefully reviewed and tested prior to any use within a Snowflake account"""
+    )
     st.write(
         """Please use the Filters and grid sorting to find users you can choose to remove passwords for or
              assign User Types."""

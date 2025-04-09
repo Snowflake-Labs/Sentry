@@ -76,16 +76,33 @@ def user_management():
         keypair.last_time_used keypair_last_time_used,
         oauth.num_of_times oauth_num_of_times,
         oauth.last_time_used oauth_last_time_used,
+        password.num_of_times password_num_of_times,
+        password.last_time_used password_last_time_used,
         nvl(nvl(unetpol.policy_name, anetpol.policy_name), run_these) as policy_name_or_possible_policy,
         run_these as possible_policy
     FROM
         snowflake.account_usage.users u
-        LEFT JOIN last_authentication_method saml ON u.name = saml.user_name AND saml.auth_method = 'SAML2_ASSERTION'
-        LEFT JOIN last_authentication_method keypair ON u.name = keypair.user_name AND keypair.auth_method = 'RSA_KEYPAIR'
-        LEFT JOIN last_authentication_method oauth ON u.name = oauth.user_name AND oauth.auth_method = 'OAUTH_ACCESS_TOKEN'
-        LEFT JOIN snowflake.account_usage.policy_references unetpol ON NAME = unetpol.ref_entity_name AND unetpol.policy_kind = 'NETWORK_POLICY' AND unetpol.ref_entity_domain = 'USER'
-        left join snowflake.account_usage.policy_references anetpol on anetpol.policy_kind = 'NETWORK_POLICY' and anetpol.ref_entity_domain = 'ACCOUNT'
-        left join user_network_policy pol on u.name = pol.user_name
+        LEFT JOIN last_authentication_method saml
+            ON u.name = saml.user_name
+                AND saml.auth_method = 'SAML2_ASSERTION'
+        LEFT JOIN last_authentication_method keypair
+            ON u.name = keypair.user_name
+                AND keypair.auth_method = 'RSA_KEYPAIR'
+        LEFT JOIN last_authentication_method oauth
+            ON u.name = oauth.user_name 
+                AND oauth.auth_method = 'OAUTH_ACCESS_TOKEN
+    '
+        LEFT JOIN last_authentication_method password
+            ON u.name = password.user_name
+                AND password.auth_method = 'PASSWORD'
+
+        LEFT JOIN snowflake.account_usage.policy_references unetpol
+            ON NAME = unetpol.ref_entity_name AND unetpol.policy_kind = 'NETWORK_POLICY'
+                AND unetpol.ref_entity_domain = 'USER'
+        LEFT JOIN snowflake.account_usage.policy_references anetpol
+            ON anetpol.policy_kind = 'NETWORK_POLICY'
+                AND anetpol.ref_entity_domain = 'ACCOUNT'
+        LEFT JOIN user_network_policy pol ON u.name = pol.user_name
         WHERE
             1 = 1
             and u.deleted_on is null and (u.type != 'SNOWFLAKE_SERVICE' or u.type is null)
@@ -205,7 +222,7 @@ def user_management():
                     "default_role",
                     "has_password",
                     "has_mfa",
-                    "snowflake_lock",
+                    "password_last_time_used",
                     "saml_last_time_used",
                     "keypair_last_time_used",
                     "oauth_last_time_used",

@@ -298,8 +298,8 @@ def user_management():
             st.session_state["confirmed_password_change"] = False
 
     st.info(
-        """Note: actions are applied immediately, but they won't appear in the table above for a few hours because of
-            the standard [`ACCOUNT_USAGE` latency](https://docs.snowflake.com/en/sql-reference/account-usage#data-latency)"""
+        """Note: results from your actions won't appear above for a few hours because of the standard
+            [`ACCOUNT_USAGE` latency](https://docs.snowflake.com/en/sql-reference/account-usage#data-latency)"""
     )
 
     with st.expander("User retrieval query"):

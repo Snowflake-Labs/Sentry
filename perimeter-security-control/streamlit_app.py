@@ -254,11 +254,11 @@ def user_management():
 
     # Render the UI for the actions
     @st.dialog("Confirm changes")
-    def confirm() -> Optional[bool]:
+    def confirm_password_changes(users: list[str]) -> None:
         st.write(
-            f"Confirm password removal for the following {len(selected_users)} users:"
+            f"Confirm password removal for the following {len(users)} users:"
         )
-        st.write(selected_users)
+        st.write(users)
 
         st.session_state["confirmed_password_change"] = False
         # st.rerun will close the modal
@@ -278,7 +278,7 @@ def user_management():
             if len(selected_users) >= 1:
                 # Ask the user to confirm removing password from users
                 if action is password:
-                    confirm()
+                    confirm_password_changes(selected_users)
 
                 if action is not password:
                     changes = action.apply_to_users(selected_users)

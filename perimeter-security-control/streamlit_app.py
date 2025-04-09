@@ -182,6 +182,12 @@ def user_management():
             "u.login_name ilike '%@%.%'",
             help="Often email-like usernames indicate human users",
         ),
+        PreFilter(
+            "User type is null",
+            "type is null",
+            help="""Users should be one of the types described in
+                  [this doc](https://docs.snowflake.com/en/user-guide/admin-user-management#label-user-management-types).""",
+        ),
     ]
 
     password = Action(
@@ -255,9 +261,7 @@ def user_management():
     # Render the UI for the actions
     @st.dialog("Confirm changes")
     def confirm_password_changes(users: list[str]) -> None:
-        st.write(
-            f"Confirm password removal for the following {len(users)} users:"
-        )
+        st.write(f"Confirm password removal for the following {len(users)} users:")
         st.write(users)
 
         st.session_state["confirmed_password_change"] = False

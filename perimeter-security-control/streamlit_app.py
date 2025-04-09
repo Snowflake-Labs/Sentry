@@ -202,8 +202,8 @@ def user_management():
                 carefully reviewed and tested prior to any use within a Snowflake account"""
     )
     st.write(
-        """Please use the Filters and grid sorting to find users you can choose to remove passwords for or
-             assign User Types."""
+        """Please use the checkboxes to filter and use the grid to sort; find users you can choose to remove passwords
+            for or assign User Types to."""
     )
     filters = pipe(
         filters,
@@ -302,7 +302,7 @@ def user_management():
             [`ACCOUNT_USAGE` latency](https://docs.snowflake.com/en/sql-reference/account-usage#data-latency)"""
     )
 
-    with st.expander("User retrieval query"):
+    with st.expander("User retrieval query (for reference)"):
         st.code(query, language="sql")
 
 

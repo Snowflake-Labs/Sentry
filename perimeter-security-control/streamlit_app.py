@@ -90,8 +90,7 @@ def user_management():
                 AND keypair.auth_method = 'RSA_KEYPAIR'
         LEFT JOIN last_authentication_method oauth
             ON u.name = oauth.user_name 
-                AND oauth.auth_method = 'OAUTH_ACCESS_TOKEN
-    '
+                AND oauth.auth_method = 'OAUTH_ACCESS_TOKEN'
         LEFT JOIN last_authentication_method password
             ON u.name = password.user_name
                 AND password.auth_method = 'PASSWORD'

@@ -1,4 +1,4 @@
-"""This is a small rewrite of the original app that is focused on getting all code into a single file."""
+"""Streamlit application to locate and manage users' passwords."""
 
 import itertools
 import re

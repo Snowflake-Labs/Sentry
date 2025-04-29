@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 from snowflake.snowpark.context import get_active_session
 from streamlit.navigation.page import StreamlitPage
+
 try:
     from toolz import pipe
     from toolz.curried import do as cdo
@@ -17,7 +18,9 @@ try:
     from toolz.curried import map as cmap
     from toolz.curried import pluck as cpluck
 except ImportError:
-    st.error("Could not import `toolz` package. Please make sure it's added to the list of packages in the dropdown.")
+    st.error(
+        "Could not import `toolz` package. Please make sure it's added to the list of packages in the dropdown."
+    )
     st.stop()
 
 st.set_page_config(layout="wide")

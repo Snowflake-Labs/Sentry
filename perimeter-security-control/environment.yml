@@ -4,4 +4,4 @@ channels:
 dependencies:
   - streamlit=1.39.0
   - snowflake-snowpark-python
-
+  - toolz

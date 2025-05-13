@@ -4,5 +4,5 @@ channels:
 dependencies:
   - pandas
   - pydantic
-  - streamlit=1.26.0
+  - streamlit
   - toolz

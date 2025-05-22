@@ -26,6 +26,30 @@ st.set_page_config(layout="wide")
 session = st.connection("securitylab2", type="snowflake").session()
 
 
+@st.cache_data
+def get_findings_base_url():
+    """Produce the base part of the URL that leads to a TC finding."""
+    orgname, accountname = pipe(
+        ("current_organization_name", "current_account_name"),
+        cmap(lambda it: session.sql(f"SELECT {it}()").collect()),
+        cmap(lambda it: it[0][0]),
+        tuple,
+    )
+    return f"https://app.snowflake.com/{orgname}/{accountname}/#/trust-center/violations/"
+
+
+def render_user_card(
+    tile,
+    username: str,
+    findings: list[str],
+) -> None:
+    """Render a single user's card."""
+    tile.write(f"**{username}**")
+    tile.write("Trust center findings:")
+    # Naive approach: just render everything as a line
+    pipe(findings, cmap(lambda it: f"[{it}]({get_findings_base_url()}{it})"), " ".join, tile.write)
+
+
 def user_management():
     """Page to manage users' passwords.
 
@@ -42,7 +66,7 @@ def user_management():
         - Changing multiselect resets the selection
     """
     query = """
-    WITH last_authentication_method AS (
+        WITH last_authentication_method AS (
     SELECT
         user_name,
         first_authentication_factor AS auth_method,
@@ -60,7 +84,45 @@ def user_management():
     from snowflake.account_usage.login_history
     where client_ip != '0.0.0.0' and is_success = 'YES'
     group by user_name
-    )
+    ),
+    --This filters findings by the most recent instance of a scanner
+    last_findings as (
+    select scanner_package_id, scanner_id, count(*) as count, max(event_id) latest_event, max(created_on) created_on
+    from snowflake.trust_center.findings
+    where total_at_risk_count > 0 --The 0 is what signifies a finding that should not be displayed
+    group by 1, 2
+    ),
+
+    --This filters out all the findings that "clear" previous findings
+    cleared_findings as (
+    select scanner_package_id, scanner_id, count(*) as count, max(event_id) latest_event, max(created_on) created_on
+    from snowflake.trust_center.findings
+    where total_at_risk_count = 0 --The 0 is what signifies a finding that should not be displayed
+    group by 1, 2
+    ),
+
+    --This query combines the previous two which removes events that were cleared by a subsequent run and joins in all the columns of the original view. So this is three versions of the view in one query to get a valid list of Findings. The details of each Finding is flattened to expose the user to enable the following CTE that aggregates the values. It was not possible in this CTE itself because of the JSON values.
+    users_to_events as (
+    select
+      ent.value:entity_name::VARCHAR AS entity_name,
+      ent.value:entity_object_type as entity_object_type,
+      m.event_id
+    from last_findings f
+    left join cleared_findings c on
+    c.scanner_package_id = f.scanner_package_id
+    and c.scanner_id = f.scanner_id
+    and c.created_on > f.created_on
+    join snowflake.trust_center.findings m on m.event_id = f.latest_event,
+    LATERAL FLATTEN(input => at_risk_entities) AS ent
+    where c.latest_event is null
+    and entity_object_type = 'USER'),
+
+    --Final CTE to allow to listagg and GROUP BY on JSON values
+    users_to_trust_center_findings as (
+    select entity_name, listagg(event_id, ',') trust_center_findings
+    from users_to_events
+    group by entity_name)
+
     SELECT
         name,
         login_name,
@@ -84,7 +146,8 @@ def user_management():
         password.num_of_times password_num_of_times,
         password.last_time_used password_last_time_used,
         nvl(nvl(unetpol.policy_name, anetpol.policy_name), run_these) as policy_name_or_possible_policy,
-        run_these as possible_policy
+        run_these as possible_policy, -- TODO: needed? separate feature!
+        trust_center_findings
     FROM
         snowflake.account_usage.users u
         LEFT JOIN last_authentication_method saml
@@ -94,12 +157,11 @@ def user_management():
             ON u.name = keypair.user_name
                 AND keypair.auth_method = 'RSA_KEYPAIR'
         LEFT JOIN last_authentication_method oauth
-            ON u.name = oauth.user_name 
+            ON u.name = oauth.user_name
                 AND oauth.auth_method = 'OAUTH_ACCESS_TOKEN'
         LEFT JOIN last_authentication_method password
             ON u.name = password.user_name
                 AND password.auth_method = 'PASSWORD'
-
         LEFT JOIN snowflake.account_usage.policy_references unetpol
             ON NAME = unetpol.ref_entity_name AND unetpol.policy_kind = 'NETWORK_POLICY'
                 AND unetpol.ref_entity_domain = 'USER'
@@ -107,11 +169,14 @@ def user_management():
             ON anetpol.policy_kind = 'NETWORK_POLICY'
                 AND anetpol.ref_entity_domain = 'ACCOUNT'
         LEFT JOIN user_network_policy pol ON u.name = pol.user_name
+        LEFT JOIN users_to_trust_center_findings tc on u.name = tc.entity_name
+
         WHERE
             1 = 1
             and u.deleted_on is null and (u.type != 'SNOWFLAKE_SERVICE' or u.type is null)
             NEEDLE
         ORDER BY has_password = true DESC, password_last_set_time;
+
     """
 
     @dataclass
@@ -240,6 +305,7 @@ def user_management():
                     "saml_last_time_used",
                     "keypair_last_time_used",
                     "oauth_last_time_used",
+                    "trust_center_findings",
                 ],
                 cmap(str.upper),
             ),
@@ -258,7 +324,35 @@ def user_management():
 
     st.write("Click rows, or select-all to populate the grid below and...")
     people = event.selection.rows
-    st.write(data.iloc[people][show_columns])
+    # st.write(data.iloc[people][show_columns])
+    # For user in users:
+    # Display a card
+
+    user_cards_data = pipe(
+        data.iloc[people][["NAME", "TRUST_CENTER_FINDINGS"]],
+        lambda it: it.to_dict("records"),
+        cmap(lambda it: (it["NAME"], it["TRUST_CENTER_FINDINGS"].split(","))),
+        list,
+    )
+
+    # I want to pack users into rows of columns with at most 4 cols per row
+    max_cols_per_row = 4
+
+    full_row_count = int(len(user_cards_data) / max_cols_per_row)
+    rows = full_row_count * st.columns(max_cols_per_row)
+    if remainder := len(user_cards_data) % max_cols_per_row:
+        rows += st.columns(remainder)
+
+    pipe(
+        user_cards_data,
+        lambda it: zip(it, rows),
+        cmap(
+            lambda it: render_user_card(
+                **{"tile": it[1].container(border=True), "username": it[0][0], "findings": it[0][1]}
+            )
+        ),
+        list,
+    )
 
     selected_users = data.iloc[people]["NAME"].tolist()
 

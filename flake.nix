@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs.follows = "nixpkgs-stable";
 
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -46,6 +46,7 @@
             config,
             pkgs,
             self',
+            inputs',
             ...
           }:
           let
@@ -93,7 +94,7 @@
           {
             packages = rec {
               # This package is used to pin and propagate snowcli version
-              snowcli = pkgs.snowflake-cli;
+              snowcli = inputs'.nixpkgs-unstable.legacyPackages.snowflake-cli;
               inherit (pkgs) poetry;
 
               # TODO: Replace with nix package in #11

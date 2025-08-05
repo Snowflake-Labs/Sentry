@@ -12,7 +12,7 @@ streamlit:
   title: Sentry
   main_file: Authentication.py
   env_file: environment.yml
-  pages_dir: pages/
+  # pages_dir: pages/
 
   additional_source_files:
     - common/queries.py

@@ -7,7 +7,7 @@ from pathlib import Path
 
 from pandas import DataFrame
 from toolz import pipe
-from toolz.curried import filter
+from toolz.curried import filter as cfilter
 from toolz.curried import map as cmap
 
 import queries
@@ -40,7 +40,7 @@ def _iterate_over_queries():
     return pipe(
         Path(queries.__path__[0]).glob("**/"),
         sorted,
-        filter(
+        cfilter(
             lambda p: p.name not in ("__pycache__", "queries"),
         ),
         cmap(attrgetter("name")),
@@ -62,7 +62,7 @@ def render_stored_procedures():
             "```\n",
         ]
 
-        pipe(output, filter(None), "\n".join, print)
+        pipe(output, cfilter(None), "\n".join, print)
 
 
 def render_sprocs_as_single_file():

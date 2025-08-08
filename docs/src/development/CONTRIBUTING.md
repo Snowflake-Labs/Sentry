@@ -13,9 +13,9 @@ architectural decisions of the project.
 
 ## Python
 
-`poetry` is used to manage the Python environment. Most IDEs can create a
-virtual environment from the `pyproject.toml`. Alternatively, use `poetry
-install --with=dev` in the project root to create it.
+`uv` is used to manage the Python environment. Most IDEs can create a
+virtual environment from the `pyproject.toml`. Alternatively, use `uv sync
+--all-extras` in the project root to create it.
 
 ## Pre-commit
 

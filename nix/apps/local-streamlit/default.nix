@@ -2,29 +2,29 @@
 {
   setUp = {
     text = ''
-      poetry install
+      uv sync --all-extras
       echo "Please setup Streamlit secrets are set up."
       echo "For more details, see https://snowflake-labs.github.io/Sentry/guide/installation/local-streamlit.html"
     '';
-    runtimeInputs = [ pkgs.poetry ];
+    runtimeInputs = [ pkgs.uv ];
     description = "Setup the python project.";
   };
 
   run = {
     text = ''
-      poetry run streamlit run "$PRJ_ROOT"/src/Authentication.py
+      uv run streamlit run "$PRJ_ROOT"/src/Authentication.py
     '';
-    runtimeInputs = [ pkgs.poetry ];
+    runtimeInputs = [ pkgs.uv ];
     description = "Run local streamlit";
   };
 
   tearDown = {
     text = ''
-      echo "Please use poetry env remove if you want to remove the virtual environment."
+      echo "Please use 'rm -rf .venv' if you want to remove the virtual environment."
       echo "More information here:"
-      echo "https://python-poetry.org/docs/managing-environments/#deleting-the-environments"
+      echo "https://docs.astral.sh/uv/concepts/projects/#project-environments"
     '';
-    runtimeInputs = [ pkgs.poetry ];
+    runtimeInputs = [ pkgs.uv ];
     description = "Remove virtual environment";
   };
 }

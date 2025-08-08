@@ -8,14 +8,14 @@ components.
 Main language is python, intended to be as compatible as possible with [Snowpark
 python conda channel](https://repo.anaconda.com/pkgs/snowflake/).
 
-The python code is managed through [poetry](https://python-poetry.org/). Poetry
+The python code is managed through [uv](https://docs.astral.sh/uv/). Uv
 was chosen for its support of lock files which provides some reproducibility
 guarantees in the python ecosystem.
 
 ## Dependencies
 
 The project dependencies are defined in `pyproject.toml` and locked in
-`poetry.lock`. The application needs to run in all of the supported
+`uv.lock`. The application needs to run in all of the supported
 environments:
 
 - Native application (follows conda channel, but has additional considerations

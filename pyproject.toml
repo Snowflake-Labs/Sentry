@@ -1,40 +1,46 @@
-[tool.poetry]
+[project]
 name = "Sentry"
 version = "0.1.0"
-authors = ["Vladimir Timofeenko <vladimir.timofeenko@snowflake.com>"]
+authors = [
+    { name = "Vladimir Timofeenko", email = "vladimir.timofeenko@snowflake.com" },
+]
 description = "Repository of security-related queries for Snowflake"
 readme = "README.md"
 license = "Apache-2.0"
-repository = "https://github.com/Snowflake-Labs/Sentry"
-homepage = "https://github.com/Snowflake-Labs/Sentry"
 
-[tool.poetry.dependencies]
-python = "~3.11"
-streamlit = "1.45.1"
-snowflake-snowpark-python = "1.34.0"
-pydantic = "2.10.3"
-tabulate = "0.9.0"
-toolz = "1.00.0"
-# Pinned deps from https://repo.anaconda.com/pkgs/snowflake/
-idna = "3.7"
-setuptools = "78.1.1"
-pyarrow = "<19.0.0"
+requires-python = "~=3.11.0"
+dependencies = [
+    "streamlit==1.45.1",
+    "snowflake-snowpark-python==1.34.0",
+    "pydantic==2.10.3",
+    "tabulate==0.9.0",
+    "toolz==1.00.0",
+    # Pinned deps from https://repo.anaconda.com/pkgs/snowflake/
+    "idna==3.7",
+    "setuptools==78.1.1",
+    "pyarrow<19.0.0",
+]
 
+[project.optional-dependencies]
+dev = [
+    "isort>=5.13.2",
+    "black>=24.3.0",
+    "ruff>=0.3.0",
+    "watchdog>=4.0.0",
+    "pytest>=8.1.1",
+]
 
-[tool.poetry.group.dev.dependencies]
-isort = "^5.13.2"
-black = "^24.3.0"
-ruff = "^0.3.0"
-watchdog = "^4.0.0"
-pytest = "^8.1.1"
+[project.urls]
+Repository = "https://github.com/Snowflake-Labs/Sentry"
+Homepage = "https://github.com/Snowflake-Labs/Sentry"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.isort]
 profile = "black"
-known_first_party = "poetry"
+known_first_party = ["common", "queries", "scripts", "vendored"]
 
 [tool.black]
 # Debatable, but on modern displays is OK

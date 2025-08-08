@@ -95,7 +95,7 @@
             packages = rec {
               # This package is used to pin and propagate snowcli version
               snowcli = inputs'.nixpkgs-unstable.legacyPackages.snowflake-cli;
-              inherit (pkgs) poetry;
+              inherit (pkgs) uv;
 
               # TODO: Replace with nix package in #11
               # For now specify snowcli so `nix flake check` passes

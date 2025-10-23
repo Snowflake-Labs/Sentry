@@ -1,0 +1,256 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║              NEW SENTRY SECURITY QUERIES - INSTALLATION COMPLETE             ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Installation Date: October 23, 2025
+Repository: /Users/phorrigan/sentry-repo
+Base: Snowflake-Applied-Field-Engineering/Sentry
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 WHAT WAS CREATED
+
+  ✓ 15 New Security Queries (SQL + Documentation)
+  ✓ 30 Query Files (15 .sql + 15 README.md)
+  ✓ 3 Documentation Files
+  ✓ 8 New MITRE ATT&CK Technique Mappings
+  ✓ 4 New Dashboard Categories
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 FILE LOCATIONS
+
+Query Files:
+  Location: src/queries/
+  Pattern:  <query_name>/<query_name>.sql
+           <query_name>/README.md
+
+Documentation:
+  ├─ NEW_QUERIES_README.md     ← START HERE (Quick Start Guide)
+  ├─ NEW_QUERIES_SUMMARY.md    (Detailed Overview)
+  └─ NEW_QUERIES_INDEX.md      (Navigation by Category)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 NEW QUERIES BY CATEGORY
+
+💰 COST MANAGEMENT & RESOURCE MONITORING
+   [COST-1]     Warehouse Cost Anomalies
+   [COST-2]     Warehouse Configuration Changes
+
+🔒 DATA LOSS PREVENTION
+   [DLP-1]      Suspicious Data Exfiltration
+   [CONFIG-2]   External Stage Monitoring
+   [SECRETS-12] Destructive Operations Monitoring
+
+⚡ PERFORMANCE & ANOMALY DETECTION
+   [PERF-1]     Unusual Query Execution Times
+
+🔐 ENHANCED AUTHENTICATION SECURITY
+   [AUTH-4]     Failed Authorization Attempts
+   [AUTH-5]     Session Hijacking Detection
+   [AUTH-6]     Unusual Login Times
+
+🛡️ DATA PROTECTION & GOVERNANCE
+   [CONFIG-3]   Masking Policy Changes
+   [CONFIG-4]   Row Access Policy Monitoring
+   [GOVERNANCE-1] Tag-Based Access Monitoring
+
+🔑 PRIVILEGED ACCESS & SECRETS
+   [SECRETS-14] OAuth Token Monitoring
+   [SECRETS-11] Service Account Activity
+
+🔧 OPERATIONS & TROUBLESHOOTING
+   [OPS-1]      Failed DDL Operations
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 QUICK START
+
+1. READ THE DOCUMENTATION
+   $ cat NEW_QUERIES_README.md
+
+2. TEST A QUERY IN SNOWFLAKE
+   - Open Snowflake worksheet
+   - Copy SQL from any query file
+   - Run as ACCOUNTADMIN or role with ACCOUNT_USAGE access
+
+3. EXAMPLE: Test Data Exfiltration Detection
+   $ cat src/queries/suspicious_data_exfiltration/suspicious_data_exfiltration.sql
+   
+   Then paste into Snowflake:
+   USE ROLE ACCOUNTADMIN;
+   -- Paste query here
+
+4. CUSTOMIZE FOR YOUR ENVIRONMENT
+   - Adjust thresholds (see NEW_QUERIES_SUMMARY.md)
+   - Update service account naming patterns
+   - Configure tag names for your classification scheme
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎨 INTEGRATION OPTIONS
+
+Option 1: STREAMLIT IN SNOWFLAKE
+  Add queries to existing Sentry Streamlit app for interactive dashboards
+
+Option 2: STORED PROCEDURES
+  Convert to stored procedures following existing Sentry pattern
+
+Option 3: SCHEDULED TASKS
+  Create Snowflake tasks to run queries automatically:
+  
+  CREATE TASK monitor_exfiltration
+    WAREHOUSE = SENTRY
+    SCHEDULE = 'USING CRON 0 */6 * * * UTC'
+  AS
+    -- Query content
+  ;
+
+Option 4: SIEM INTEGRATION
+  Export results to security monitoring platform for alerting
+
+Option 5: MANUAL EXECUTION
+  Run queries directly in worksheets for investigations
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔒 SECURITY COVERAGE
+
+NEW MITRE ATT&CK TECHNIQUES COVERED:
+  • T1496  - Resource Hijacking
+  • T1567  - Exfiltration Over Web Service
+  • T1048  - Exfiltration Over Alternative Protocol
+  • T1485  - Data Destruction
+  • T1490  - Inhibit System Recovery
+  • T1185  - Browser Session Hijacking
+  • T1562  - Impair Defenses
+  • T1530  - Data from Cloud Storage Object
+
+COMPLIANCE SUPPORT:
+  • GDPR   - Personal data access monitoring
+  • HIPAA  - PHI access tracking
+  • PCI-DSS - Cardholder data monitoring
+  • SOX    - Financial data controls
+  • CCPA   - Consumer data transparency
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚙️ CUSTOMIZATION CHECKLIST
+
+Before deploying to production, customize these parameters:
+
+  □ warehouse_cost_anomalies
+    → Adjust z-score threshold (default: 2)
+    
+  □ suspicious_data_exfiltration
+    → Set export threshold (default: 1GB)
+    
+  □ service_account_activity
+    → Update naming patterns (default: svc/service/app)
+    
+  □ tag_based_access_monitoring
+    → Configure your classification tags (default: PII/PHI/PCI)
+    
+  □ unusual_login_times
+    → Set hour deviation threshold (default: 3 hours)
+    
+  □ All queries
+    → Adjust time windows based on your needs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 RECOMMENDED DEPLOYMENT ORDER
+
+HIGH PRIORITY (Deploy First):
+  1. Suspicious Data Exfiltration (DLP-1)
+  2. Session Hijacking Detection (AUTH-5)
+  3. Destructive Operations Monitoring (SECRETS-12)
+  4. Masking Policy Changes (CONFIG-3)
+  5. Service Account Activity (SECRETS-11)
+
+MEDIUM PRIORITY:
+  6. Warehouse Cost Anomalies (COST-1)
+  7. Failed Authorization Attempts (AUTH-4)
+  8. External Stage Monitoring (CONFIG-2)
+  9. Unusual Login Times (AUTH-6)
+  10. Row Access Policy Monitoring (CONFIG-4)
+
+LOWER PRIORITY (Nice to Have):
+  11. Warehouse Configuration Changes (COST-2)
+  12. Unusual Query Execution Times (PERF-1)
+  13. OAuth Token Monitoring (SECRETS-14)
+  14. Tag-Based Access Monitoring (GOVERNANCE-1)
+  15. Failed DDL Operations (OPS-1)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION GUIDE
+
+START HERE:
+  NEW_QUERIES_README.md
+  └─ Quick start guide with examples
+  └─ Integration options
+  └─ High-value queries to start with
+
+DETAILED REFERENCE:
+  NEW_QUERIES_SUMMARY.md
+  └─ Complete query descriptions
+  └─ Security indicators and recommendations
+  └─ Customization guidance
+  └─ Compliance mappings
+
+QUICK NAVIGATION:
+  NEW_QUERIES_INDEX.md
+  └─ Browse by category
+  └─ Browse by dashboard
+  └─ Browse by MITRE ATT&CK technique
+
+INDIVIDUAL QUERIES:
+  src/queries/<query_name>/README.md
+  └─ Query-specific documentation
+  └─ Use cases and security risks
+  └─ Recommended actions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔗 USEFUL LINKS
+
+Original Sentry Repository:
+  https://github.com/Snowflake-Applied-Field-Engineering/Sentry
+
+Sentry Documentation:
+  https://snowflake-labs.github.io/Sentry
+
+Snowflake ACCOUNT_USAGE:
+  https://docs.snowflake.com/en/sql-reference/account-usage.html
+
+MITRE ATT&CK for Cloud:
+  https://attack.mitre.org/matrices/enterprise/cloud/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ NEXT STEPS
+
+1. □ Read NEW_QUERIES_README.md
+2. □ Test 2-3 high-priority queries in your environment
+3. □ Customize thresholds for your use case
+4. □ Choose integration method (Streamlit/Tasks/SIEM)
+5. □ Deploy high-priority queries first
+6. □ Set up alerting for critical findings
+7. □ Document your baselines and thresholds
+8. □ Train security team on new queries
+9. □ Schedule regular review cadence
+10. □ Consider contributing improvements upstream
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 INSTALLATION COMPLETE - HAPPY MONITORING!
+
+For support or questions, refer to the documentation files or open an issue
+on the repository.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

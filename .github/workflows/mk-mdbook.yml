@@ -19,16 +19,13 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
 
       # Python setup
-      - name: Install poetry
-        run: |
-          nix profile install .#poetry
-      # Project runs against this version specifically, nixpkgs has only 3.11
+      - uses: astral-sh/setup-uv@v5
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Setup python
         run: |
-          poetry install --no-root
+          uv sync --no-install-project
 
       # Build the docs
       - name: Build Book

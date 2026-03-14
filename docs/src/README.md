@@ -27,7 +27,7 @@ Sentry can also be deployed as a [Trust Center extension][tc-ext]. This
 registers Sentry's security scanners directly with the [Snowflake Trust
 Center][tc-doc], allowing findings to appear alongside built-in scanner packages
 in Snowsight's Governance & Security section. This deployment model does not
-require the Streamlit UI -- the scanners run on a schedule managed by Trust
+require the Streamlit UI – the scanners run on a schedule managed by Trust
 Center and results are queryable through the `SNOWFLAKE.TRUST_CENTER.FINDINGS`
 view.
 

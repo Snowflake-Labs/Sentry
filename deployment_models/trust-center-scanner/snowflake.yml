@@ -1,0 +1,20 @@
+definition_version: 2
+entities:
+  pkg:
+    type: application package
+    identifier: sentry_trust_center_extension_pkg
+    artifacts:
+      - src: app/*
+        dest: ./
+
+      - src: common_code/helpers.py
+        dest: common_code/helpers.py
+
+
+    manifest: app/manifest.yml
+
+  app:
+    type: application
+    from:
+      target: pkg
+    identifier: sentry_trust_center_extension

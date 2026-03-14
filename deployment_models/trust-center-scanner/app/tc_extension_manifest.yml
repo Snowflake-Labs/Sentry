@@ -1,0 +1,208 @@
+manifest_version: '2.0'
+scanner_packages:
+- id: secrets_and_priv_access
+  name: Secrets & Privileged Access
+  short_description: Monitors secrets, tokens, and privileged access patterns
+  description: Scans for security risks related to credential management, privileged
+    access grants, and sensitive configuration changes that could expose the account
+    to unauthorized access.
+  scanners:
+  - id: stale_users
+    name: Stale users
+    short_description: Detects inactive user accounts
+    description: Identifies user accounts that have not logged in for an extended
+      period, indicating potentially abandoned or unnecessary accounts that should
+      be disabled.
+    type: VULNERABILITY
+    callback:
+      schema: stale_users
+      name: scan
+      version: '1.0'
+  - id: grants_to_public
+    name: Grants to PUBLIC role
+    short_description: Detects privileges granted to all users
+    description: Detects recent GRANT statements that assign privileges to the PUBLIC
+      role, which is automatically assigned to all users in the account and may expose
+      sensitive resources.
+    type: DETECTION
+    callback:
+      schema: grants_to_public
+      name: scan
+      version: '1.0'
+  - id: privileged_object_changes
+    name: Privileged object changes
+    short_description: Monitors changes to sensitive objects
+    description: Monitors changes to sensitive objects including roles, integrations,
+      shares, stages, and ownership transfers that could introduce security vulnerabilities.
+    type: DETECTION
+    callback:
+      schema: privileged_object_changes
+      name: scan
+      version: '1.0'
+  - id: scim_token_lifecycle
+    name: SCIM token lifecycle
+    short_description: Alerts on expiring SCIM tokens
+    description: Monitors SCIM access tokens and alerts when they are approaching
+      expiration, preventing identity sync disruptions and authentication failures.
+    type: VULNERABILITY
+    callback:
+      schema: scim_token_lifecycle
+      name: scan
+      version: '1.0'
+  - id: grants_to_unmanaged_sch
+    name: Grants to unmanaged schemas
+    short_description: Detects grants bypassing schema ownership
+    description: Identifies grants on objects in unmanaged schemas made by users other
+      than the schema owner, which bypasses centralized access control and complicates
+      auditing.
+    type: VULNERABILITY
+    callback:
+      schema: grants_to_unmanaged_sch
+      name: scan
+      version: '1.0'
+  - id: default_role_check
+    name: Default role is ACCOUNTADMIN
+    short_description: Users defaulting to full admin privileges
+    description: Identifies users whose default role is set to ACCOUNTADMIN, meaning
+      they operate with full administrative privileges by default on every login.
+    type: VULNERABILITY
+    callback:
+      schema: default_role_check
+      name: scan
+      version: '1.0'
+- id: roles_scanner
+  name: Roles
+  short_description: Analyzes role configurations and grants
+  description: Scans for security risks in role-based access control including overly
+    permissive roles, dangerous role grants, and unused access that violates least-privilege
+    principles.
+  scanners:
+  - id: accountadmin_grants
+    name: ACCOUNTADMIN grants
+    short_description: Detects grants of full admin access
+    description: Detects recent grants of the ACCOUNTADMIN role to users, which provides
+      full administrative access to the Snowflake account and should be tightly controlled.
+    type: DETECTION
+    callback:
+      schema: roles_scanner
+      name: scan
+      version: '1.0'
+  - id: bloated_roles
+    name: Bloated Roles
+    short_description: Roles with excessive privileges
+    description: Identifies roles with an unusually large number of effective privileges,
+      indicating potential violation of least-privilege principles and increased blast
+      radius if compromised.
+    type: VULNERABILITY
+    callback:
+      schema: bloated_roles
+      name: scan
+      version: '1.0'
+  - id: least_used_role_grants
+    name: Least Used Role Grants
+    short_description: Identifies dormant role assignments
+    description: Identifies role grants to users that have rarely or never been used,
+      indicating over-provisioning of access and dormant privileges that could be
+      exploited.
+    type: VULNERABILITY
+    callback:
+      schema: least_used_role_grants
+      name: scan
+      version: '1.0'
+- id: user_scanner
+  name: Users
+  short_description: Analyzes user access and credentials
+  description: Scans for security risks related to user accounts including excessive
+    access concentration, stale credentials, and accounts that may pose elevated risk
+    if compromised.
+  scanners:
+  - id: most_dangerous_user
+    name: Most dangerous user
+    short_description: Users with concentrated access
+    description: Identifies users who have been granted an unusually high number of
+      roles, concentrating broad access in single accounts and increasing risk if
+      compromised.
+    type: VULNERABILITY
+    callback:
+      schema: most_dangerous_user
+      name: scan
+      version: '1.0'
+  - id: users_by_oldest_passwords
+    name: Users by Password Age
+    short_description: Detects stale passwords
+    description: Identifies users whose passwords have not been changed in over a
+      year, exceeding typical password rotation policies and increasing credential
+      compromise risk.
+    type: VULNERABILITY
+    callback:
+      schema: users_by_oldest_passwords
+      name: scan
+      version: '1.0'
+- id: config_scanner
+  name: Configuration
+  short_description: Monitors security configuration changes
+  description: Scans for changes to security-critical configurations that control
+    network access, authentication policies, and account-level settings.
+  scanners:
+  - id: network_policy_changes
+    name: Network policy changes
+    short_description: Monitors network access control changes
+    description: Monitors changes to network policies including creation, modification,
+      deletion, and assignment that could expose the account to untrusted networks.
+    type: DETECTION
+    callback:
+      schema: network_policy_changes
+      name: scan
+      version: '1.0'
+- id: authentication_scanner
+  name: Authentication
+  short_description: Monitors authentication security
+  description: Scans for authentication-related security events including failed login
+    attempts that may indicate credential attacks or account compromise attempts.
+  scanners:
+  - id: num_failures
+    name: Number of login failures
+    short_description: Detects potential credential attacks
+    description: Reports users with recent failed login attempts grouped by failure
+      reason, which may indicate brute force attacks, credential stuffing, or misconfiguration.
+    type: DETECTION
+    callback:
+      schema: num_failures
+      name: scan
+      version: '1.0'
+- id: sharing_scanner
+  name: Sharing
+  short_description: Monitors data sharing configurations
+  description: Scans for changes to data sharing configurations including shares,
+    listings, and reader accounts that could expose data to unintended external parties.
+  scanners:
+  - id: reader_creation_monitor
+    name: Reader account creation
+    short_description: Detects new external access points
+    description: Detects attempts to create managed (reader) accounts, which allow
+      sharing data with external consumers who don't have their own Snowflake account.
+    type: DETECTION
+    callback:
+      schema: reader_creation_monitor
+      name: scan
+      version: '1.0'
+  - id: listing_changes
+    name: Listing changes monitor
+    short_description: Monitors Marketplace listing changes
+    description: Tracks recent ALTER LISTING operations that modify Snowflake Marketplace
+      or private listing configurations, which could expose data to unintended consumers.
+    type: DETECTION
+    callback:
+      schema: listing_changes
+      name: scan
+      version: '1.0'
+  - id: share_alter
+    name: SHAREs changes monitor
+    short_description: Monitors data share modifications
+    description: Tracks recent ALTER SHARE operations that modify data sharing configurations
+      with external accounts, which could leak data or revoke legitimate access.
+    type: DETECTION
+    callback:
+      schema: share_alter
+      name: scan
+      version: '1.0'

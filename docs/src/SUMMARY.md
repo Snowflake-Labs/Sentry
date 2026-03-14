@@ -13,6 +13,7 @@
   - [Native application](./guide/installation/native-app.md)
   - [Snowpark Container Services]()
   - [Stored procedures](./guide/installation/snowgit.md)
+  - [Trust Center extension](./guide/installation/trust-center-extension.md)
 - [Usage](./guide/usage/README.md)
 - [Update](./guide/update/README.md)
   - [Streamlit in Snowflake](./guide/update/streamlit-in-snowflake.md)

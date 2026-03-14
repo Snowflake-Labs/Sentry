@@ -23,9 +23,20 @@ The Streamlit UI can be deployed as:
 - Snowflake native application
 - Docker container
 
+Sentry can also be deployed as a [Trust Center extension][tc-ext]. This
+registers Sentry's security scanners directly with the [Snowflake Trust
+Center][tc-doc], allowing findings to appear alongside built-in scanner packages
+in Snowsight's Governance & Security section. This deployment model does not
+require the Streamlit UI -- the scanners run on a schedule managed by Trust
+Center and results are queryable through the `SNOWFLAKE.TRUST_CENTER.FINDINGS`
+view.
+
 See corresponding section for installation instructions. The easiest method to
 install Sentry is probably ["Streamlit in Snowflake through a GitHub
 action"][ez-button].
+
+[tc-ext]: ./guide/installation/trust-center-extension.md
+[tc-doc]: https://docs.snowflake.com/en/user-guide/trust-center/trust-center-extensions
 
 [quickstart]: https://quickstarts.snowflake.com/guide/security_dashboards_for_snowflake/index.html
 [ez-button]: ./guide/installation/streamlit-in-snowflake.md#github-action
